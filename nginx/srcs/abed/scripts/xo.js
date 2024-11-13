@@ -567,7 +567,7 @@ function startGame() {
 
     const displayXoFunction = () => {
         freeze.classList.add("unclick");
-        app.style.display = "block";
+        app.style.display = "flex";
         const design = document.querySelector("#design");
         design.style.filter = "blur(3px)";
         const games = document.querySelector("#games");
