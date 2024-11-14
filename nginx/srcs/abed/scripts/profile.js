@@ -12,7 +12,7 @@ const recordGame = (matchData) => {
     const gameContainer = document.getElementById("games-container");
     const gameRecordHTML = `
         <div class="game-record">
-            <h2 id="win-lost" style="color: '#78dc78'; text-decoration: underline;">
+            <h2 id="win-lost" style="${matchData.result === "won" ? "color: #78dc78" : "color: red"};">
                 ${matchData.result}
             </h2>
             <div id="match">
@@ -22,7 +22,7 @@ const recordGame = (matchData) => {
                 </div>
                 <div id="enemy" style="background-image: url(${matchData.opponent.imageProfile}); border-radius: 50%;"></div>
             </div>
-            <h2 id="score-pts">XO</h2>
+            <h2 id="score-pts">${matchData.Type}</h2>
         </div>
     `;
     // Convert the HTML string to DOM elements

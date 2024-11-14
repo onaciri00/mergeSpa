@@ -22,6 +22,7 @@ def         store_match(request):
     print("The level is ", request.data.get('level'), flush=True)
     print("The result is ", request.data.get('result'), flush=True)
     print("The opponent is ", request.data.get('opponent'), flush=True)
+    print("The Type is ", request.data.get('Type'), flush=True)
     user_db.save()
     print("use is save", flush=True)
     print ("error ", match_serialize.is_valid())
@@ -54,6 +55,7 @@ def get_match_history(request):
                 "imageProfile": match.opponent.imageProfile.url
             },
             "result": match.result,
+            "Type": match.Type,
         }
         response_data.append(match_data)
 

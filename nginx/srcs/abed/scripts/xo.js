@@ -137,7 +137,8 @@ function postMatch()
         user : matchdata.id,
         opponent: matchdata.opponent,
         result: matchdata.x_result,
-        level: 0
+        level: 0,
+        Type: "XO"
     }
     postdata.level= 1;
     console.log("crtf ", crtf);
