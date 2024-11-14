@@ -22,7 +22,7 @@ const recordGame = (matchData) => {
                 </div>
                 <div id="enemy" style="background-image: url(${matchData.opponent.imageProfile}); border-radius: 50%;"></div>
             </div>
-            <h2 id="score-pts">change me</h2>
+            <h2 id="score-pts">XO</h2>
         </div>
     `;
     // Convert the HTML string to DOM elements
