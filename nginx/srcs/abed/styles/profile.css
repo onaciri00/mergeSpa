@@ -286,12 +286,27 @@
 }
 
 #me {
-    background-image: url(../images/me.jpg);
+    /* background-image: url(../images/me.jpg); */
     background-size: cover;
 }
 
+#you {
+    background-color: green;
+}
+
+#opp {
+    background-color: red;
+}
+
+#you , #opp {
+    width: 100px;
+    padding: 4px;
+    border-radius: 2px;
+    text-align: center;
+}
+
 #enemy {
-    background-image: url(../images/1.jpeg);
+    /* background-image: url(../images/1.jpeg); */
     background-size: cover;
 }
 
