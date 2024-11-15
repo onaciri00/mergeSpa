@@ -24,6 +24,11 @@
     text-align: center;
 }
 
+.allbrackets h2{
+    font-size: 18px;
+    font-family: 'Games', sans-serif;
+}
+
 #form button{
     padding: 20px;
     margin-top: 10px;

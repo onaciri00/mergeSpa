@@ -298,7 +298,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		requestAnimationFrame(renderGame);
 	}
 	/* ************************************ Abed Changes ******************************************* */
-
+	
 	const handlePlayBtn = () => {
 		const bodyElement = document.querySelector("body");
 		const header = document.createElement("h1");

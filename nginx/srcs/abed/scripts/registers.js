@@ -21,6 +21,8 @@ const hide = (element) => {
 
 const show = (element) => {
 	element.style.display = 'flex';
+	const parent = document.querySelector("#choose-mode");
+	parent.append(element);
 }
 
 const randomNumber = (i) =>{
