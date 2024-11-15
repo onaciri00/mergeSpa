@@ -37,6 +37,12 @@
     color: whitesmoke;
 }
 
+.semifinals {
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+}
+
 .input-control input:focus
 {
     outline: 0;
