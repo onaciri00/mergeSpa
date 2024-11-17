@@ -154,7 +154,7 @@ function postMatch()
 }
 async function fetchRoom() {
     try {
-        const response = await fetch('http://127.0.0.1:8001/api/rooms/');
+        const response = await fetch('http://127.0.0.1:8001/api/xrooms/');
         
         if (!response.ok) {
             console.log("No available rooms. Creating a new room...");
@@ -179,7 +179,7 @@ async function fetchRoom() {
 
 async function createRoom() {
     try {
-        const response = await fetch('http://127.0.0.1:8001/api/rooms/', {
+        const response = await fetch('http://127.0.0.1:8001/api/xrooms/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -298,7 +298,7 @@ function startGame() {
    }
 
     function connectWebSocket() {
-        socket = new WebSocket(`ws://127.0.0.1:8001/ws/play/${roomCode}/`);
+        socket = new WebSocket(`ws://127.0.0.1:8001/ws/playx/${roomCode}/`);
 
         socket.onopen = function() {
             console.log("Here New pr")
