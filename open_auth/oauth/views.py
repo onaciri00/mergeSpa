@@ -24,6 +24,7 @@ from django.core.files import File
 import os
 from channels.layers     import get_channel_layer
 from asgiref.sync        import async_to_sync
+from  usermangement .serializer      import ProfileSerializer
 
 client_id       = "u-s4t2ud-fa7692872a0200db78dfe687567cc55dd2a444234c7720f33c53e0a4286a7301"
 client_secret   = "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"
@@ -38,9 +39,7 @@ grant_type = "authorization_code"
 def     register_vu(request):
     print("\033[1;32m you're in the register function \n")
     if request.method == 'POST':
-        # form = CustmerSerializer(data=request.data) #request.data = post data from client
-        form = CustomerForm(data=request.data) #request.data = post data from client
-
+        form = RegisterSerializer(data = request.data) 
         print(f"Form Data: {request.data}")
         if form.is_valid():
             print("\033[1;38m This user is valid \n")
@@ -51,13 +50,18 @@ def     register_vu(request):
                 # Open the default avatar and assign it as the profile image
                 with open(default_avatar_path, 'rb') as avatar_file:
                     user.imageProfile.save('default_avatar.jpg', File(avatar_file))
-            user_token, created = Token.objects.get_or_create(user=user)
-            seria = RegisterSerializer(instance=user)
-            print(f"\033[1;38m This is the user token: {user_token}")
-            print(f"\033[1;38m This is the user data ", seria.data)
-            return JsonResponse({'status': 'success', 'data':seria.data}, status=200)
+            password = request.data.get('password1')
+            user = authenticate(username = user.username, password = password)
+
+            print(f"\033[1;38m This is the user data ", user)
+            if user:
+                login(request, user)
+                print(f"\033[1;38m sessiom was created ", form.data)
+            else :
+                return JsonResponse({'status': 'faild', 'data':"faild to login"}, status=400)
+            return JsonResponse({'status': 'success', 'data':form.data}, status=200)
         else:
-            errors = form.errors.as_json()
+            errors = form.errors
             print("\033[1;39m This user failed to sign up \n")  
             print(f"Errors: {errors}")  # Add this line   
             return JsonResponse({'status': 'faild', 'error': form.errors}, status=400)
@@ -239,6 +243,21 @@ def     get_user_info_api(access_token):
         return user_data
    else :
         return None
+
+@api_view(["GET"])
+def users_rank(request):
+    print ("\n Rank Of The Users \n")
+    user = request.user
+    if user.is_authenticated:
+        # Order users by `scoor` in descending order
+        users = User_info.objects.all().order_by('scoor')
+
+        # Serialize the ordered users
+        users_serialized = ProfileSerializer(users, many=True)
+
+        return JsonResponse({'status': 'success', 'data': users_serialized.data})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'User is not authenticated'}, status=400)
 
 """
 If the user is redirected to your callback URL with the following URL:

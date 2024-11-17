@@ -183,12 +183,13 @@ def get_user_friends(request):
 def users_list(request):
     print('Users List \n')
     current_user = request.user
+    super_user   = User_info.objects.filter(is_superuser=True)
     # Get users who have sent or received a request to/from the current user
     sent_requests = RequestFriend.objects.filter(from_user=current_user).values_list('to_user', flat=True) # flat=True with Output: [2, 3, 5] WITHOUT [(2), (3)]
     received_requests = RequestFriend.objects.filter(to_user=current_user).values_list('from_user', flat=True)
     # Combine both sets of users into one list
     requested_users_ids = list(set(sent_requests) | set(received_requests))
-    users = User_info.objects.exclude(id=current_user.id).exclude(id__in=requested_users_ids)
+    users = User_info.objects.exclude(id=current_user.id).exclude(id__in=requested_users_ids).exclude(is_superuser=True)
     serialize_users = ProfileSerializer(users, many=True)
     print ('users : ', serialize_users.data)
     return JsonResponse({'status': 'success', 'data': serialize_users.data})

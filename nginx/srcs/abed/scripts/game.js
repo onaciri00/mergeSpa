@@ -298,7 +298,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		requestAnimationFrame(renderGame);
 	}
 	/* ************************************ Abed Changes ******************************************* */
-	
+
 	const handlePlayBtn = () => {
 		const bodyElement = document.querySelector("body");
 		const header = document.createElement("h1");
@@ -323,7 +323,6 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		container.append(twoPlayers, tournament, remote);
 		parent.append(header, container);
 		bodyElement.append(parent);
-		// --------------------------------- //
 		parent.style.display = "flex";
 		const handleRemoteGame = () => {
 			container.style.display = "none";
@@ -331,16 +330,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 			parent.append(app);
 			app.style.display = "flex";
 		}
-
 		remote.addEventListener("click", handleRemoteGame);
-		const handleTournament = () => {
-			const TournamentContainer = document.querySelector('.container');
-			container.style.display = "none";
-			header.style.display = "none";
-			TournamentContainer.style.display = "flex";
-			parent.append(TournamentContainer);
-		}
-		tournament.addEventListener("click", handleTournament);
 	}
 
 	const play_button = document.querySelector("#play-button");
