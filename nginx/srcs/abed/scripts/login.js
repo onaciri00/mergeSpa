@@ -36,7 +36,7 @@ const updateData = async () => {
                 const jsonResponse = await response.json();
                 if (jsonResponse.status === "success") {
                     dataObject = jsonResponse.data;
-                    reloadFunction(dataObject);
+                    // reloadFunction(dataObject); no sure if i need to comment this , (just try to fix one error);
                 }
             }
         } catch(err) {

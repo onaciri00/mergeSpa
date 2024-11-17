@@ -275,7 +275,7 @@
 }
 
 .player-rank .player-pic {
-    background-image: url(../images/me.jpg);
+    /* background-image: url(../images/me.jpg); */
     background-size: cover;
     width: 60px;
     height: 60px;

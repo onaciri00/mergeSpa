@@ -250,7 +250,7 @@ def users_rank(request):
     user = request.user
     if user.is_authenticated:
         # Order users by `scoor` in descending order
-        users = User_info.objects.all().order_by('score')
+        users = User_info.objects.all().order_by('-id')
 
         # Serialize the ordered users
         users_serialized = ProfileSerializer(users, many=True)
