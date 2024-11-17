@@ -19,6 +19,7 @@ def         store_match(request):
     print ('user ------- >> : ', user, flush=True) 
     
     user_db.level = request.data.get('level')
+    user_db.level = request.data.get('score')
     print("The level is ", request.data.get('level'), flush=True)
     print("The result is ", request.data.get('result'), flush=True)
     print("The opponent is ", request.data.get('opponent'), flush=True)
@@ -56,6 +57,7 @@ def get_match_history(request):
             },
             "result": match.result,
             "Type": match.Type,
+            "score": match.score
         }
         response_data.append(match_data)
 

@@ -16,7 +16,8 @@ class           MatchHistoric(models.Model):
     opponent    = models.ForeignKey(User_info, related_name="opponent", on_delete=models.CASCADE)
     result      = models.CharField(max_length=10)
     Type        = models.CharField(max_length=20, default="")
-    level       = models.IntegerField(default=0) 
+    level       = models.IntegerField(default=0)
+    score       = models.IntegerField(default=0)
     # models.DateTimeField(auto_now_add = True)
 
 # related_name allows you to query the related objects in reverse:

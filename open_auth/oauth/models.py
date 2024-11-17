@@ -23,7 +23,7 @@ class User_info(AbstractUser):
     friends   = models.ManyToManyField('self', blank=True)
     online_status = models.BooleanField(default=False)   
     level    = models.IntegerField(default=0)
-    scoor    = models.IntegerField(default = 0)
+    score    = models.IntegerField(default=0)
 
     # understand this #
     groups = models.ManyToManyField(
