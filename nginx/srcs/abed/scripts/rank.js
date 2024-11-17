@@ -77,25 +77,34 @@ const getRank = (data) => {
     }
 }
 
-let isFetched = 0;
-
 export const rankFunct = async () => {
+    alert(" rank func");
     main.style.display = "none";
     settingPage.style.display = "none";
     chatPage.style.display = "none";
     profileId.style.display = "none";
     friendsPart.style.display = "none";
     rankPart.style.display = "flex";
-    if (!document.querySelector("#top-ranked")) { // just temporary solution;
-        const response = await fetch("/users_rank/");
-        console.log("rank response: ", response);
-        if (response.ok) {
-            // alert("here.");
-            const jsonData = await response.json();
-            if (jsonData.status === "success") {
-                console.log("data of rank: ", jsonData);
-                getRank(jsonData);
-            }
+
+    const topRanked = document.querySelector("#top-ranked");
+    const firstCol = document.querySelector("#first-col");
+    const secondCol = document.querySelector("#second-col");
+    const theRest2 = document.querySelector("#the-rest2");
+    if (topRanked) {
+        document.querySelector("#rank-part").innerHTML = "";
+        // topRanked.innerHTML = "";
+        // firstCol.innerHTML = "";
+        // secondCol.innerHTML = "";
+        // theRest2.innerHTML = "";
+    }
+
+    const response = await fetch("/users_rank/");
+    console.log("rank response: ", response);
+    if (response.ok) {
+        const jsonData = await response.json();
+        if (jsonData.status === "success") {
+            console.log("data of rank: ", jsonData);
+            getRank(jsonData);
         }
     }
 }
