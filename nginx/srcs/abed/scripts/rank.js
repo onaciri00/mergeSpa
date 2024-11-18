@@ -106,9 +106,7 @@ export const rankFunct = async () => {
     if (topRanked) {
         document.querySelector("#rank-part").innerHTML = "";
     }
-
     const response = await fetch("/users_rank/");
-    console.log("rank response: ", response);
     if (response.ok) {
         const jsonData = await response.json();
         if (jsonData.status === "success") {
