@@ -7,7 +7,6 @@ import { chatPage } from "./chat.js";
 import { rankPart } from "./rank.js";
 import { friendsPart } from "./friends.js";
 
-// const gameContainer = document.querySelector("#games-container");
 const recordGame = (matchData) => {
     const gameContainer = document.getElementById("games-container");
     const gameRecordHTML = `
@@ -48,21 +47,21 @@ export const profileFunction = async (dataObj) => {
         }
         document.querySelector("#welcome > h1").innerHTML = `Welcome ${dataObj.firstname} ${dataObj.lastname}!`;
     }
-    if (!document.querySelector(".game-record")) {
-        const response = await fetch("/user/get_match_history");
-        if (response.ok) {
-            const jsonData = await response.json();
-            // if (jsonData.status === "200")
-            // {
-                console.log("Match History: ", jsonData);
-                jsonData.forEach(element => {
-                    recordGame(element);
-                });
+    const gameContainer = document.querySelector("#games-container");
+    gameContainer.innerHTML = "";
+    const response = await fetch("/user/get_match_history");
+    if (response.ok) {
+        const jsonData = await response.json();
+        // if (jsonData.status === "200")
+        // {
+            console.log("Match History: ", jsonData);
+            jsonData.forEach(element => {
+                recordGame(element);
+            });
 
-            // }
-        } else {
-            console.error("error with the response...");
-        }
+        // }
+    } else {
+        console.error("error with the response...");
     }
 }
 
