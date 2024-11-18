@@ -36,49 +36,65 @@ const getRank = (data) => {
                 </div>
             </div>
         </div>
+        <div id="the-rest">
+            <div id="first-col">
+            ${data.data.map((element, i) => {
+                if (i > 2) {
+                    const player = `
+                        <div class="player-rank">
+                            <h5>${element.id}</h5>
+                            <div class="player-pic" style="background-image: url(${element.imageProfile})"></div>
+                            <h5 class="usernamee">${element.username}</h5>
+                            <h4>${element.score}</h4>
+                        </div>
+                    `;
+                    if (i % 2 !== 0) {
+                        return player.trim();
+                    }
+                }
+            }).join("")}
+            </div>
+            <div id="second-col">
+                ${data.data.map((element, i) => {
+                    if (i > 2) {
+                        const player = `
+                            <div class="player-rank">
+                                <h5>${element.id}</h5>
+                                <div class="player-pic" style="background-image: url(${element.imageProfile})"></div>
+                                <h5 class="usernamee">${element.username}</h5>
+                                <h4>${element.score}</h4>
+                            </div>
+                        `;
+                        if (i % 2 === 0) {
+                            return player.trim();
+                        }
+                    }
+                }).join("")}
+            </div>
+        </div>
+        <div id="the-rest2">
+            ${data.data.map((element, i) => {
+                if (i > 2) {
+                    const player = `
+                        <div class="player-rank">
+                            <h5>${element.id}</h5>
+                            <div class="player-pic" style="background-image: url(${element.imageProfile})"></div>
+                            <h5 class="usernamee">${element.username}</h5>
+                            <h4>${element.score}</h4>
+                        </div>
+                    `;
+                    return player.trim();
+                }
+            }).join("")}
+        </div>
     `;
     const rankPart = document.querySelector("#rank-part");
-    const topThree = document.createElement("div");
-    topThree.innerHTML = rank.trim();
-    rankPart.append(topThree);
-    // ------------------------------------ the rest ranking ------------------------------ //
-
-    const firstCol = document.querySelector("#first-col");
-    const secondCol = document.querySelector("#second-col");
-
-    for (let i = 3; data.data[i]; i++) {
-        const player = `
-            <div class="player-rank">
-                <h5>${data.data[i].id}</h5>
-                <div class="player-pic" style="background-image: url(${data.data[i].imageProfile})"></div>
-                <h5 class="usernamee">${data.data[i].username}</h5>
-                <h4>${data.data[i].score}</h4>
-            </div>
-        `;
-        if (i % 2 !== 0) {
-            firstCol.innerHTML += player.trim();
-        } else {
-            secondCol.innerHTML += player.trim();
-        }
-    }
-    const theRest = document.querySelector("#the-rest");
-    topThree.insertAdjacentElement('afterend', theRest);
-    const theRest2 = document.querySelector("#the-rest2");
-    for (let i = 3; data.data[i]; i++) {
-        const player = `
-            <div class="player-rank">
-                <h5>${data.data[i].id}</h5>
-                <div class="player-pic" style="background-image: url(${data.data[i].imageProfile})"></div>
-                <h5 class="usernamee">${data.data[i].username}</h5>
-                <h4>${data.data[i].score}</h4>
-            </div>
-        `;
-        theRest2.innerHTML += player.trim();
-    }
+    const all = document.createElement("div");
+    all.innerHTML = rank.trim();
+    rankPart.append(all);
 }
 
 export const rankFunct = async () => {
-    alert(" rank func");
     main.style.display = "none";
     settingPage.style.display = "none";
     chatPage.style.display = "none";
@@ -87,15 +103,8 @@ export const rankFunct = async () => {
     rankPart.style.display = "flex";
 
     const topRanked = document.querySelector("#top-ranked");
-    const firstCol = document.querySelector("#first-col");
-    const secondCol = document.querySelector("#second-col");
-    const theRest2 = document.querySelector("#the-rest2");
     if (topRanked) {
         document.querySelector("#rank-part").innerHTML = "";
-        // topRanked.innerHTML = "";
-        // firstCol.innerHTML = "";
-        // secondCol.innerHTML = "";
-        // theRest2.innerHTML = "";
     }
 
     const response = await fetch("/users_rank/");
