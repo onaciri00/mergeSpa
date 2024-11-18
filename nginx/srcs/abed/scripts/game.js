@@ -216,10 +216,18 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		}
 		else if (pmatch < 6 && pmatch > 3){
 			console.log("Semi Final");
+			fetchRoom();
+			app.style.display = "flex";
+			startContainer.classList.remove("active");
+			startContainer.style.display = "none";
 			pmatch += 1;
 		}
 		else{
 			console.log("Final")
+			fetchRoom();
+			app.style.display = "flex";
+			startContainer.classList.remove("active");
+			startContainer.style.display = "none";
 			pmatch += 1;
 
 		}
@@ -245,19 +253,29 @@ document.addEventListener("DOMContentLoaded", () =>  {
 				// always remove first two from bracket and then semi 
 				// function to keep count and start matche first call is by enter key
 				//winner taker pad num 
-				if (pmatch < 4)
+				if (pmatch <= 4)
 				{
 					if (winner == '0')
+					{
 						semi.push(bracket[0]);
-					else
+					}
+					else{
 						semi.push(bracket[1]);
-					bracket.splice(0, 2);
+					}
+					document.getElementById("1stbracket").value = semi[0];
+					document.getElementById("2ndbracket").value = semi[1];
+					document.getElementById("3rdbracket").value = semi[2];
+					document.getElementById("4thbracket").value = semi[3];
+					if (bracket.length - 2 > 0)
+						bracket.splice(0, 2);
 				}
-				else if (pmatch < 6 && pmatch > 3){
+				else if (pmatch <= 6 && pmatch > 4){
 					if (winner == '0')
 						final.push(semi[0]);
 					else
 						final.push(semi[1]);
+					document.getElementById("Finalist1").value = final[0];
+					document.getElementById("Finalist2").value = final[1];
 					semi.splice(0, 2);
 				}
 				if (pmatch == 7)
@@ -266,8 +284,8 @@ document.addEventListener("DOMContentLoaded", () =>  {
 					if (winner == '0')
 						console.log(" the winner is ", final[0])
 					else
+						isTourn = true;
 					console.log(" the winner is ", final[1])
-					isTourn = true;
 					// announce Winner and pmatch = 0 and game start
 					//anounceWiner();
 				}
