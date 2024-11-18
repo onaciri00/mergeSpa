@@ -250,7 +250,7 @@ class PingPongConsumer(AsyncWebsocketConsumer):
         global match
         match = Match(0)  
         while True:
-            if match.p1.score == 5:
+            if match.p1.score == 1:
                 await self.channel_layer.group_send(
                 self.room_group_name,
                 {
@@ -260,7 +260,7 @@ class PingPongConsumer(AsyncWebsocketConsumer):
                 }
             )
                 break
-            elif  match.p2.score == 5:
+            elif  match.p2.score == 1:
                 await self.channel_layer.group_send(
                 self.room_group_name,
                 {
