@@ -5,7 +5,7 @@ import { profileId } from "./profile.js";
 import { main } from "./home.js";
 import {settingPage} from "./setting.js";
 import { rankPart } from "./rank.js";
-import { friendsPart } from "./friends.js";
+import { friendsPart, friendsFunction } from "./friends.js";
 
 export const chatFunction = () => {
     // document.querySelector("#online-friends").style.display = "none";
@@ -19,19 +19,6 @@ export const chatFunction = () => {
 
 // chatButton.addEventListener("click", chatFunction);
 
-const data_example = async() => { // get characters.
-    try {
-        const data = await fetch("https://dattebayo-api.onrender.com/characters");
-        if (data.ok)
-        {
-            const json_data = await data.json();
-            return json_data.characters;
-        }
-    } catch (err) {
-        console.error(err);
-    }
-}
-
 const container = document.querySelector("#msgs");
 
 const scrollToBottom = ()=> {
@@ -40,7 +27,7 @@ const scrollToBottom = ()=> {
 }
 
 const data_characters = async () => {
-    const characters = await data_example();
+    const characters = await friendsFunction();
     const chats1 = document.querySelector("#chats");
     const chats2 = document.querySelector("#chats2");
 
@@ -48,8 +35,8 @@ const data_characters = async () => {
         const user = document.createElement("div");
         const user2 = document.createElement("div");
 
-        user.innerHTML = character.name;
-        user2.innerHTML = character.name;
+        user.innerHTML = character.username;
+        user2.innerHTML = character.username;
 
         chats1.appendChild(user);
         chats2.appendChild(user2);
@@ -64,8 +51,8 @@ const data_characters = async () => {
             userElement.style.width = "95%";
             userElement.style.boxShadow = "0 0 5px #9bf9ff";
             userElement.classList.add("selected-user");
-            document.querySelector("#chat-pic").style.backgroundImage = `url("${character.images[0]}")`;
-            document.querySelector("#secondd h3").innerHTML = character.name;
+            document.querySelector("#chat-pic").style.backgroundImage = `url("${character.imageProfile}")`;
+            document.querySelector("#secondd h3").innerHTML = character.username;
         };
 
         user.addEventListener("click", () => handleUserClick(user));
@@ -119,4 +106,5 @@ sendMsg.addEventListener("keyup", frontChat);
 const sendMsgBtn = document.querySelector("#input-group-text-chat");
 sendMsgBtn.addEventListener("click", frontChat2);
 
-data_characters();
+document.addEventListener("DOMContentLoaded", data_characters);
+// data_characters();
