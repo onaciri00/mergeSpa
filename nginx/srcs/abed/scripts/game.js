@@ -125,13 +125,12 @@ document.addEventListener("DOMContentLoaded", () =>  {
 
 	function connectWebSocket() {
 		socket = new WebSocket(`ws://127.0.0.1:8002/ws/play/${roomCode}/`);
-
 		socket.onopen = function() {
 			console.log('WebSocket connection established.');
 		};
 		socket.onmessage = function(event) {
 			const data = JSON.parse(event.data);
-			console.log("Event is ", data.event);
+			// console.log("Event is ", data.event);
 			if (data.type === "GAME_STATE") {
 				const ball = data.ball				// Extract ball and paddle datal;
 				const paddle_serv1 = data.paddle1;
