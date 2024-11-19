@@ -74,6 +74,29 @@
     }
 }
 
+.user {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.user-dots {
+    position: absolute;
+    right: 11%;
+}
+
+.block-style {
+    border: 2px solid black;
+    width: 138px !important;
+    height: 50px !important;
+    background-color: #9a2833;
+    color: white;
+    position: absolute;
+    right: -3px;
+    top: 45%;
+    z-index: 1000;
+}
+
 .dropdown {
     display: none;
 }

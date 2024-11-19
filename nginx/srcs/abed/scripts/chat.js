@@ -32,15 +32,30 @@ const data_characters = async () => {
     const chats2 = document.querySelector("#chats2");
 
     characters.forEach(character => {
+        const userStr = `
+            <p>${character.username}</p>
+            <p class="user-dots"><button class="btn" style="background-color: rgb(0, 12, 45, 0.90);"><i class="fa-solid fa-ellipsis-vertical"></i></button></p>
+        `;
         const user = document.createElement("div");
-        const user2 = document.createElement("div");
-
-        user.innerHTML = character.username;
-        user2.innerHTML = character.username;
-
+        user.classList.add("user");
+        user.innerHTML = userStr.trim();
         chats1.appendChild(user);
-        chats2.appendChild(user2);
-
+        
+        const handleDots = () => {
+            const existingBlock = document.querySelector(".block-style");
+            if (existingBlock)
+                existingBlock.remove();
+            else {
+                const blockElement = document.createElement("div");
+                blockElement.classList.add("block-style"); // style in css
+                blockElement.innerHTML = "Block";
+                user.appendChild(blockElement);
+            }
+        }
+        const dots = user.querySelector(".user-dots button");
+        dots.addEventListener("click", handleDots);
+        // chats2.appendChild(user2);
+        
         const handleUserClick = (userElement) => {
             const users = document.querySelectorAll("#chats div, #chats2 div");
             users.forEach(userr => {
@@ -54,9 +69,9 @@ const data_characters = async () => {
             document.querySelector("#chat-pic").style.backgroundImage = `url("${character.imageProfile}")`;
             document.querySelector("#secondd h3").innerHTML = character.username;
         };
-
+        
         user.addEventListener("click", () => handleUserClick(user));
-        user2.addEventListener("click", () => handleUserClick(user2));
+        // user2.addEventListener("click", () => handleUserClick(user2));
     });
 };
 
