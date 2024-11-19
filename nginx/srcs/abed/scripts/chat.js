@@ -37,10 +37,12 @@ const data_characters = async () => {
             <p class="user-dots"><button class="btn" style="background-color: rgb(0, 12, 45, 0.90);"><i class="fa-solid fa-ellipsis-vertical"></i></button></p>
         `;
         const user = document.createElement("div");
+        const user2 = document.createElement("div");
         user.classList.add("user");
+        user2.classList.add("user");
         user.innerHTML = userStr.trim();
+        user2.innerHTML = userStr.trim();
         chats1.appendChild(user);
-        
         const handleDots = () => {
             const existingBlock = document.querySelector(".block-style");
             if (existingBlock)
@@ -54,7 +56,7 @@ const data_characters = async () => {
         }
         const dots = user.querySelector(".user-dots button");
         dots.addEventListener("click", handleDots);
-        // chats2.appendChild(user2);
+        chats2.appendChild(user2);
         
         const handleUserClick = (userElement) => {
             const users = document.querySelectorAll("#chats div, #chats2 div");
@@ -71,7 +73,7 @@ const data_characters = async () => {
         };
         
         user.addEventListener("click", () => handleUserClick(user));
-        // user2.addEventListener("click", () => handleUserClick(user2));
+        user2.addEventListener("click", () => handleUserClick(user2));
     });
 };
 
