@@ -65,7 +65,7 @@ const data_characters = async () => {
                 userr.style.width = "90%";
                 userr.style.boxShadow = "0 0 5px #0e2c2e";
             });
-            userElement.style.width = "95%";
+            // userElement.style.width = "95%";
             userElement.style.boxShadow = "0 0 5px #9bf9ff";
             userElement.classList.add("selected-user");
             document.querySelector("#chat-pic").style.backgroundImage = `url("${character.imageProfile}")`;
