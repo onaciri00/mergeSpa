@@ -29,7 +29,7 @@ const scrollToBottom = ()=> {
 const data_characters = async () => {
     const characters = await friendsFunction();
     const chats1 = document.querySelector("#chats");
-    const chats2 = document.querySelector("#chats2");
+    // const chats2 = document.querySelector("#chats2");
 
     characters.forEach(character => {
         const userStr = `
@@ -44,6 +44,7 @@ const data_characters = async () => {
         user2.innerHTML = userStr.trim();
         chats1.appendChild(user);
         const handleDots = () => {
+            alert("enter when using mobile.");
             const existingBlock = document.querySelector(".block-style");
             if (existingBlock)
                 existingBlock.remove();
@@ -56,7 +57,7 @@ const data_characters = async () => {
         }
         const dots = user.querySelector(".user-dots button");
         dots.addEventListener("click", handleDots);
-        chats2.appendChild(user2);
+        // chats2.appendChild(user2);
         
         const handleUserClick = (userElement) => {
             const users = document.querySelectorAll("#chats div, #chats2 div");
@@ -71,7 +72,13 @@ const data_characters = async () => {
             document.querySelector("#chat-pic").style.backgroundImage = `url("${character.imageProfile}")`;
             document.querySelector("#secondd h3").innerHTML = character.username;
         };
-        
+        //show friends for for mobile screens;
+        const usersStr = `
+            <p>${character.username}</p>
+            <p class="user-dots"><button class="btn" style="background-color: rgb(0, 12, 45, 0.90);"><i class="fa-solid fa-ellipsis-vertical"></i></button></p>
+        `;
+
+
         user.addEventListener("click", () => handleUserClick(user));
         user2.addEventListener("click", () => handleUserClick(user2));
     });
