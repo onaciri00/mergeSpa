@@ -3,15 +3,31 @@
         display: block !important;
     }
     #chat-page {
-        width: 100%;
+        border-left: none !important;
+        margin-top: 205px !important;
+        margin-left: 8px !important;
+        width: 95% !important;
+    }
+    #chats {
+        height: 100% !important;
     }
     #chat-part {
         margin: 20px 0 0 0 !important;
         width: 100% !important;
         min-width: 320px !important;
+        height: fit-content !important;
+        min-height: 711px !important;
     }
     #players {
-        display: none;
+        margin-top: 6px;
+        position: absolute !important;
+        height: 200px !important;
+        width: 95% !important;
+        border: 2px solid black !important;
+        overflow-y: auto;
+    }
+    #firstt {
+        display: none !important;
     }
     #messages {
         width: 100% !important;
@@ -77,9 +93,6 @@
     }
 }
 
-* {
-    margin: 0;
-}
 
 #chat2 {
     width: 150px;
@@ -195,6 +208,7 @@
     border-radius: 10px;
     width: 90%;
     height: 12%;
+    min-height: 80px;
     margin: 15px auto;
 }
 #firstt {

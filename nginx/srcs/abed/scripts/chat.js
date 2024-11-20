@@ -26,40 +26,9 @@ const scrollToBottom = ()=> {
     
 }
 
-const chatForMobile = (character) => {
-    console.log(character.username);
-    const strElement = `
-        <p style="padding-top: 5px;">${character.username}</p>
-        <p class="user-dots2"><button class="btn" style="background-color: rgb(0, 12, 45, 0.90);"><i class="fa-solid fa-ellipsis-vertical"></i></button></p>
-    `;
-    const userElement = document.createElement("div");
-    userElement.classList.add("user2");
-    userElement.innerHTML = strElement.trim();
-    const users = document.querySelector("#chat2");
-    users.style.display = "flex";
-    users.append(userElement);
-
-    const handleDots = () => {
-        alert("handle dots mobile.");
-        const existingBlock = document.querySelector(".block-style2");
-        if (existingBlock)
-            existingBlock.remove();
-        else {
-            const blockElement = document.createElement("div");
-            blockElement.classList.add("block-style2"); // style in css
-            blockElement.innerHTML = "Block";
-            users.appendChild(blockElement);
-        }
-    }
-
-    const dots = userElement.querySelector(".user-dots2 button");
-    dots.addEventListener("click", handleDots);
-}
-
 const data_characters = async () => {
     const characters = await friendsFunction();
     const chats1 = document.querySelector("#chats");
-    document.querySelector("#chat2").innerHTML = "";
     characters.forEach(character => {
         const userStr = `
             <p>${character.username}</p>
@@ -83,7 +52,7 @@ const data_characters = async () => {
         const dots = user.querySelector(".user-dots button");
         dots.addEventListener("click", handleDots);
 
-        chatForMobile(character);
+        // chatForMobile(character);
 
         const handleUserClick = (userElement) => {
             const users = document.querySelectorAll("#chats div");
