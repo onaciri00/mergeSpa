@@ -27,7 +27,7 @@ from asgiref.sync        import async_to_sync
 from  usermangement .serializer      import ProfileSerializer
 
 client_id       = "u-s4t2ud-fa7692872a0200db78dfe687567cc55dd2a444234c7720f33c53e0a4286a7301"
-client_secret   = "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"
+client_secret   = "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"
 redirect_url    = "https://localhost/"
 authorization_url = "https://api.intra.42.fr/oauth/authorize"
 token_url = "https://api.intra.42.fr/oauth/token"
@@ -250,7 +250,7 @@ def users_rank(request):
     user = request.user
     if user.is_authenticated:
         # Order users by `scoor` in descending order
-        users = User_info.objects.all().order_by('-id')
+        users = User_info.objects.all().order_by('-score')
 
         # Serialize the ordered users
         users_serialized = ProfileSerializer(users, many=True)

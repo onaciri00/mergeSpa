@@ -17,9 +17,10 @@ def         store_match(request):
     
     match_serialize =  MatchHistoricSerialzer(data=request.data)
     print ('user ------- >> : ', user, flush=True) 
+
     
     user_db.level = request.data.get('level')
-    user_db.level = request.data.get('score')
+    user_db.score = request.data.get('score')
     print("The level is ", request.data.get('level'), flush=True)
     print("The result is ", request.data.get('result'), flush=True)
     print("The opponent is ", request.data.get('opponent'), flush=True)

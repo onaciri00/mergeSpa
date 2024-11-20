@@ -8,6 +8,7 @@ import { profileId } from "./profile.js";
 import { friendsPart } from "./friends.js";
 
 const getRank = (data) => {
+    console.log("data rank: ", data);
     const rank = `
         <h3 style="text-align: center;">LEADERBOARD</h3>
         <div id="top-ranked">
@@ -42,7 +43,7 @@ const getRank = (data) => {
                 if (i > 2) {
                     const player = `
                         <div class="player-rank">
-                            <h5>${element.id}</h5>
+                            <h5>${i + 1}</h5>
                             <div class="player-pic" style="background-image: url(${element.imageProfile})"></div>
                             <h5 class="usernamee">${element.username}</h5>
                             <h4>${element.score}</h4>
@@ -59,7 +60,7 @@ const getRank = (data) => {
                     if (i > 2) {
                         const player = `
                             <div class="player-rank">
-                                <h5>${element.id}</h5>
+                                <h5>${i + 1}</h5>
                                 <div class="player-pic" style="background-image: url(${element.imageProfile})"></div>
                                 <h5 class="usernamee">${element.username}</h5>
                                 <h4>${element.score}</h4>
@@ -77,7 +78,7 @@ const getRank = (data) => {
                 if (i > 2) {
                     const player = `
                         <div class="player-rank">
-                            <h5>${element.id}</h5>
+                            <h5>${i + 1}</h5>
                             <div class="player-pic" style="background-image: url(${element.imageProfile})"></div>
                             <h5 class="usernamee">${element.username}</h5>
                             <h4>${element.score}</h4>

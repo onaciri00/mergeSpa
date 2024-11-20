@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
         chose:"",
         result:0,
         x_resuSuserlt:"",
+        score:0,
     };
     // const leftGameContainer = document.createElement("div");
 
@@ -97,6 +98,7 @@ function fetchUser(){
             matchdata.id = data.data.id;
             matchdata.user = data.data.id;
             matchdata.level = data.data.level;
+            matchdata.score = data.data.score
             console.log("LEVEL is ", matchdata.level, " User is ", matchdata.user, matchdata.id)
         }
     })
@@ -138,6 +140,7 @@ function postMatch()
         opponent: matchdata.opponent,
         result: matchdata.x_result,
         level: 0,
+        score:19,
         Type: "XO"
     }
     postdata.level= 1;
