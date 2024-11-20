@@ -77,6 +77,44 @@
     }
 }
 
+* {
+    margin: 0;
+}
+
+#chat2 {
+    width: 150px;
+    height: 200px;
+    border: 1px solid white;
+    position: absolute;
+    right: 4px;
+    top: 100%;
+    /* display: none; */
+    flex-direction: column;
+}
+
+.user2 {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+
+.block-style2 {
+    border: 2px solid black;
+    width: 80px !important;
+    height: 40px !important;
+    background-color: #9a2833;
+    color: white;
+    position: absolute;
+    right: -3px;
+    top: 17%;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .user {
     position: relative;
     display: flex;
