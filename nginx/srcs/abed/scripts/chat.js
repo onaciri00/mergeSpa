@@ -15,6 +15,11 @@ export const chatFunction = () => {
     rankPart.style.display = "none";
     friendsPart.style.display = "none";
     chatPage.style.display = "block";
+    const chats = document.querySelector("#chats");
+    if (chats) {
+        chats.innerHTML = "";
+    }
+    data_characters();
 }
 
 // chatButton.addEventListener("click", chatFunction);
@@ -51,9 +56,6 @@ const data_characters = async () => {
         }
         const dots = user.querySelector(".user-dots button");
         dots.addEventListener("click", handleDots);
-
-        // chatForMobile(character);
-
         const handleUserClick = (userElement) => {
             const users = document.querySelectorAll("#chats div");
             users.forEach(user => {
@@ -67,7 +69,6 @@ const data_characters = async () => {
             document.querySelector("#secondd h3").innerHTML = character.username;
         };
         user.addEventListener("click", () => handleUserClick(user));
-
     });
 };
 
@@ -117,5 +118,5 @@ sendMsg.addEventListener("keyup", frontChat);
 const sendMsgBtn = document.querySelector("#input-group-text-chat");
 sendMsgBtn.addEventListener("click", frontChat2);
 
-document.addEventListener("DOMContentLoaded", data_characters);
+// document.addEventListener("DOMContentLoaded", data_characters);
 // data_characters();
