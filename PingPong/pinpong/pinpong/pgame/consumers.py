@@ -128,16 +128,14 @@ class PingPongConsumer(AsyncWebsocketConsumer):
         global pad_num
         self.room_code = self.scope['url_route']['kwargs']['room_code']
         self.room_group_name = f'pingpong_{self.room_code}'
-        self.isgame = True
+        
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
         )
         if self.room_group_name not in connected_players:
             connected_players[self.room_group_name] = []
-        if self.room_group_name not in connected_players:
-            connected_players[self.room_group_name] = []
-        if len(connected_players[self.room_group_name]) >= 2 and self.isgame:
+        if len(connected_players[self.room_group_name]) >= 2:
             await self.close()
             return
         pad_num = len(connected_players[self.room_group_name])
@@ -146,13 +144,11 @@ class PingPongConsumer(AsyncWebsocketConsumer):
             'pad_num': pad_num
         })
         await self.accept()
-        print("working ", flush=True)
         await self.send(text_data=json.dumps({
             'type': 'ASSIGN_PAD_NUM',
             'pad_num': pad_num
         }))
         if len(connected_players[self.room_group_name]) == 2:
-            print("In start", flush=True)
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
@@ -162,7 +158,6 @@ class PingPongConsumer(AsyncWebsocketConsumer):
                 }
         )
         else:
-            print("IN waiting", flush=True)
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
@@ -224,7 +219,7 @@ class PingPongConsumer(AsyncWebsocketConsumer):
                 match.p2.change_direction(move)
                 match.p2.move()
         if (data.get('type') == 'local'):
-            self.isgame = False
+            self.is_locked = False
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
@@ -285,7 +280,7 @@ class PingPongConsumer(AsyncWebsocketConsumer):
                     'paddle2': paddle_data2
                 }
             )
-            await asyncio.sleep(0.009)
+            await asyncio.sleep(0.01)
     async def game_state(self, event):
         """Send ball position to all connected clients"""
         ball_data = event['ball']

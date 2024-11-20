@@ -23,9 +23,12 @@ class RoomListCreateAPIView(APIView):
     def post(self, request):
         print("Create room")
         code = request.data.get('code')
+        gameType = request.data.get('type')
         print("code of  room", code)
         room = Proom.objects.create(code=code)
         print("room player is ", room.players)
         serializer = ProomSerializer(room)
+        if (gameType != "remote"):
+            room.players = 1
         print("*-------------------------------------------------------------------------*")
         return Response(serializer.data)

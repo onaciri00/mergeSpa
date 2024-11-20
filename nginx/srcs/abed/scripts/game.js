@@ -74,13 +74,23 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		}
 	});
 	function createRoom() {
-	    fetch('http://127.0.0.1:8002/api/prooms/', {
-	        method: 'POST',
-	        headers: {
-	            'Content-Type': 'application/json',
-	        },
-	        body: JSON.stringify({"code": generateRoomCode()})
-	    })
+	    // fetch('http://127.0.0.1:8002/api/prooms/', {
+	    //     method: 'POST',
+	    //     headers: {
+	    //         'Content-Type': 'application/json',
+	    //     },
+	    //     body: JSON.stringify({"code": generateRoomCode()})
+	    // })
+		fetch('http://127.0.0.1:8002/api/prooms/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				"code": generateRoomCode(),
+				"type": gameType
+			})
+		})
 	    .then(response => response.json())
 	    .then(data => {
 	        roomCode = data.code;
