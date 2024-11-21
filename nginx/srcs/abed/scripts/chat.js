@@ -8,7 +8,6 @@ import { rankPart } from "./rank.js";
 import { friendsPart, friendsFunction } from "./friends.js";
 
 export const chatFunction = () => {
-    // document.querySelector("#online-friends").style.display = "none";
     profileId.style.display = "none";
     main.style.display = "none";
     settingPage.style.display = "none";
@@ -117,6 +116,3 @@ const frontChat2 = (event)=> {
 sendMsg.addEventListener("keyup", frontChat);
 const sendMsgBtn = document.querySelector("#input-group-text-chat");
 sendMsgBtn.addEventListener("click", frontChat2);
-
-// document.addEventListener("DOMContentLoaded", data_characters);
-// data_characters();

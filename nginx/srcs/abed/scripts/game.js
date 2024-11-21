@@ -320,7 +320,12 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		remote.classList.add("mode");
 		remote.innerHTML = `Remote.`
 		container.append(twoPlayers, tournament, remote);
-		parent.append(header, container);
+		// const closeButton = `<button type="button" class="btn-close" aria-label="Close"></button>`;
+		const closeBtn = document.createElement("button");
+		closeBtn.type = "button";
+		closeBtn.classList.add("btn-close");
+		closeBtn.ariaLabel = "Close";
+		parent.append(header, container, closeBtn);
 		bodyElement.append(parent);
 		// --------------------------------- //
 		parent.style.display = "flex";
@@ -340,6 +345,14 @@ document.addEventListener("DOMContentLoaded", () =>  {
 			parent.append(TournamentContainer);
 		}
 		tournament.addEventListener("click", handleTournament);
+
+
+		const closeGame = () => {
+			parent.style.display = "none";
+			// playAgain();
+		}
+
+		closeBtn.addEventListener("click", closeGame);
 	}
 
 	const play_button = document.querySelector("#play-button");
