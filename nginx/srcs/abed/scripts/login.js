@@ -65,7 +65,9 @@ const loginForm = document.querySelector("#login-form");
 const loginPassword = document.querySelector("#login-password");
 
 const loginFunction = async (event) => {
+    console.log(event);
     event.preventDefault();
+    // if (event.key === "Enter")
     const token =  await get_csrf_token();
     const formData = new FormData(loginForm);
     const response = await fetch('/login/', {
@@ -97,5 +99,10 @@ const loginFunction = async (event) => {
         displayErrorMsg(jsonResponse.error, loginPassword, "");
     }
 }
-
 loginForm.addEventListener("submit", loginFunction);
+
+loginForm.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+        loginFunction(event);
+    }
+});
