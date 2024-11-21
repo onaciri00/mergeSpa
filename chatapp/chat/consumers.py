@@ -24,7 +24,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 self.channel_name
             )
         messages = await sync_to_async(list) (
-        Message.objects.filter(room=room).order_by('timestamp').all()[:10]
+        Message.objects.filter(room=room).order_by('timestamp').all()
         )
 
         for message in messages:
@@ -46,11 +46,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         sender = text_data_json.get('author', '')
         recipient = text_data_json.get('recipient', '')
         content = text_data_json.get('message', '')
-        room_name = text_data_json.get('roomName', '')
+        room_id = text_data_json.get('roomId', '')
 
-        print(f"Sender: {sender}, recipient: {recipient} ,Message: {content}, Room: {room_name}")
+        print(f"Sender: {sender}, recipient: {recipient} ,Message: {content}, Room: {room_id}")
 
-        room = await sync_to_async(Room.objects.get)(id=room_name)
+        room = await sync_to_async(Room.objects.get)(id=room_id)
         message = await sync_to_async(Message.objects.create)(
             author=sender,
             content=content,
