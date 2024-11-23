@@ -128,6 +128,7 @@ class PingPongConsumer(AsyncWebsocketConsumer):
         global pad_num
         self.room_code = self.scope['url_route']['kwargs']['room_code']
         self.room_group_name = f'pingpong_{self.room_code}'
+        self.gameType = "remote"
         
         await self.channel_layer.group_add(
             self.room_group_name,
@@ -219,7 +220,7 @@ class PingPongConsumer(AsyncWebsocketConsumer):
                 match.p2.change_direction(move)
                 match.p2.move()
         if (data.get('type') == 'local'):
-            self.is_locked = False
+            self.gameType = "local"
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
@@ -244,6 +245,7 @@ class PingPongConsumer(AsyncWebsocketConsumer):
     async def start_game_loop(self):
         global match
         match = Match(0)  
+        print("gsme type is ", self.gameType, flush=True)
         while True:
             if match.p1.score == 1:
                 await self.channel_layer.group_send(
@@ -265,22 +267,31 @@ class PingPongConsumer(AsyncWebsocketConsumer):
                 }
             )
                 break
-            match.move()  # Update ball position
+            match.move()
             match.p1.move()
             match.p2.move()
             ball_data = match.b.serialize_ball()
             paddle_data1 = match.p1.serialize_paddle()
             paddle_data2 = match.p2.serialize_paddle()
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    'type': 'game_state',
+            if self.gameType == "local":
+                await self.send(text_data=json.dumps({
+                    'type': 'GAME_STATE',
                     'ball': ball_data,
                     'paddle1': paddle_data1,
                     'paddle2': paddle_data2
-                }
-            )
-            await asyncio.sleep(0.01)
+                }))
+                await asyncio.sleep(0.003)
+            else:    
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'game_state',
+                        'ball': ball_data,
+                        'paddle1': paddle_data1,
+                        'paddle2': paddle_data2
+                    }
+                )
+                await asyncio.sleep(0.009)
     async def game_state(self, event):
         """Send ball position to all connected clients"""
         ball_data = event['ball']

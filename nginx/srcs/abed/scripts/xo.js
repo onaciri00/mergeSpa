@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
             <div class="square align" data-index="8"></div>
         </div>
         <div id="alert_move">Your are </div>
-        <button id="play-again">Play Again</button> <!-- Moved here -->
+        <button id="pplay-again">Play Again</button> <!-- Moved here -->
     `;
     waitContainer.innerHTML=`
         <div class="loader-container">
@@ -457,7 +457,7 @@ function startGame() {
             console.log('t his restGame');
             showResult.classList.add("active");
             showResult.style.display = "block";
-            document.querySelector("#play-again").style.display = "block";
+            document.querySelector("#pplay-again").style.display = "block";
             let WinCondation = [
                 [0, 1, 2],
                 [3, 4, 5],
@@ -499,14 +499,14 @@ function startGame() {
         const same = document.querySelector(".same-User");
         same.style.display = "none";
         waitContainer.classList.remove("active")
-        startContainer.classList.add("active");
         gameContainer.classList.remove("active");
+        startContainer.classList.add("active");
         startContainer.style.display = "block";
         showResult.classList.remove("active");
         document.getElementById("alert_move").textContent = `Your are ${charChoice}`;
         document.querySelector(".bg").style.left = "0";
         document.querySelector("#result").innerHTML = "";
-        document.querySelector("#play-again").style.display = "none";
+        document.querySelector("#pplay-again").style.display = "none";
         document.querySelector(".bg").style.backgroundColor = "#FF2E63";
         // gameContainer.classList.remove('player-o-turn'); 
         document.querySelectorAll('.square').forEach((element) => {
@@ -516,7 +516,7 @@ function startGame() {
             element.style.color = "white";
         });
     }
-    document.querySelector("#play-again").addEventListener("click", playAgain);
+    document.querySelector("#pplay-again").addEventListener("click", playAgain);
     // const app = document.querySelector("#app");
     const freeze = document.querySelector("#freeze");
 

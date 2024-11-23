@@ -165,7 +165,7 @@ body {
     display: none;
 } 
 
-#play-again
+#pplay-again
 {
     background-color: #FF2E63;
     padding: 10px 25px;
@@ -178,7 +178,7 @@ body {
      margin: auto;
 }
 
-#play-again:hover
+#pplay-again:hover
 {
     padding: 10px 40px;
     background-color: #08D9D6;

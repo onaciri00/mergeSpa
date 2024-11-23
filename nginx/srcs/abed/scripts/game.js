@@ -63,8 +63,12 @@ document.addEventListener("DOMContentLoaded", () =>  {
 	app.appendChild(waitContainer);
 	app.append(game_over);
 	document.getElementById("startGame1").addEventListener("click", function() {
+		
 		wait_page();
-		fetchRoom();
+		if (gameType == 'remote')
+			fetchRoom();
+		else
+			createRoom();
 	});
 
 	window.addEventListener("beforeunload", (event) => {
@@ -74,13 +78,6 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		}
 	});
 	function createRoom() {
-	    // fetch('http://127.0.0.1:8002/api/prooms/', {
-	    //     method: 'POST',
-	    //     headers: {
-	    //         'Content-Type': 'application/json',
-	    //     },
-	    //     body: JSON.stringify({"code": generateRoomCode()})
-	    // })
 		fetch('http://127.0.0.1:8002/api/prooms/', {
 			method: 'POST',
 			headers: {
@@ -155,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		socket.onmessage = function(event) {
 			const data = JSON.parse(event.data);
 			if (data.type === "GAME_STATE") {
-				const ball = data.ball				// Extract ball and paddle datal;
+				const ball = data.ball				
 				const paddle_serv1 = data.paddle1;
 				const paddle_serv2 = data.paddle2;
 				ballPosition.x = ball.x;
@@ -175,7 +172,10 @@ document.addEventListener("DOMContentLoaded", () =>  {
 				console.log("pad num is ", pad_num)
 			}
 			else if (data.event == 'START')
-				start_game();
+				{
+					console.log("in start");
+					start_game();
+				}
 			else if (data.event == 'END')
 				Game_over(data.message);
 			else if (data.event == "LEFT")
@@ -201,6 +201,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		main_counter.style.display = "block";
 		let Tournament = document.querySelector('.allbrackets');
 		Tournament.style.display = "none";
+		resetDOM()
 		runAnimation();
 		setTimeout(() => {
 			socket.send(JSON.stringify({ type: "start"}));
@@ -217,24 +218,21 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		console.log("this semi bracket have ", semi);
 		console.log("pmatch  is ", pmatch)
 		if (pmatch < 4 ){
-			console.log("QUARTET")
-			fetchRoom();
+			createRoom();
 			app.style.display = "flex";
 			startContainer.classList.remove("active");
 			startContainer.style.display = "none";
 			pmatch += 1;
 		}
 		else if (pmatch < 6 && pmatch > 3){
-			console.log("Semi Final");
-			fetchRoom();
+			createRoom();
 			app.style.display = "flex";
 			startContainer.classList.remove("active");
 			startContainer.style.display = "none";
 			pmatch += 1;
 		}
 		else{
-			console.log("Final")
-			fetchRoom();
+			createRoom();
 			app.style.display = "flex";
 			startContainer.classList.remove("active");
 			startContainer.style.display = "none";
@@ -320,6 +318,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 				if (pad_num == 0)
 					game_over.style.backgroundColor = "#0095DD";
 			}
+			document.querySelector("#play-again").style.display = "block";
 		}
 	}
 
@@ -495,6 +494,10 @@ document.addEventListener("DOMContentLoaded", () =>  {
 	/* ************************************ Abed Changes ******************************************* */
 	
 	const handlePlayBtn = () => {
+		const closeBtn = document.createElement("button");
+		closeBtn.type = "button";
+		closeBtn.classList.add("btn-close");
+		closeBtn.ariaLabel = "Close";
 		const bodyElement = document.querySelector("body");
 		const header = document.createElement("h1");
 		header.id = "header-mode";
@@ -518,6 +521,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		container.append(twoPlayers, tournament, remote);
 		parent.append(header, container);
 		bodyElement.append(parent);
+		parent.append(header, container, closeBtn);
 		// --------------------------------- //
 		parent.style.display = "flex";
 		const handleRemoteGame = () => {
@@ -562,6 +566,17 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		closeBtn.addEventListener("click", closeGame);
 	}
 
+	const playAgain = () =>{
+		document.querySelector("#play-again").style.display = "none";
+		roomCode = "";
+		room_is_created = false;
+		pad_num = 0;
+		game_over.style.display = "none";
+		startContainer.classList.add("active");
+	    startContainer.style.display = "block";
+	}
+
+    document.querySelector("#play-again").addEventListener("click", playAgain);
 	const play_button = document.querySelector("#play-button");
 	play_button.addEventListener("click", handlePlayBtn);
 
