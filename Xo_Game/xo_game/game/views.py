@@ -22,9 +22,15 @@ class RoomListCreateAPIView(APIView):
     def post(self, request):
         print("Create room")
         code = request.data.get('code')
+        gameType = request.data.get('gameType')
         print("code of  room", code)
         room = XRoom.objects.create(code=code)
         print("room player is ", room.players)
+        if (gameType != "remote"):
+            room.players += 2
+            room.save()
+        print("game type is ", gameType, flush=True)
+        print("players are ", room.players, flush=True)
         serializer = XRoomSerializer(room)
         print("*-------------------------------------------------------------------------*")
         return Response(serializer.data)
