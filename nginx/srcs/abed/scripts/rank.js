@@ -14,26 +14,26 @@ const getRank = (data) => {
         <div id="top-ranked">
             <div id="first-three">
                 <div id="gold">
-                    <p style="margin: 0">${data.data.length > 0 ? data.data[0].username : ""}</p>
-                    <div id="first-user-pic" style="background-image: url(${data.data.length > 0 ? data.data[0].imageProfile : ""})">
+                    <p style="margin: 0">${data.data[0].username}</p>
+                    <div id="first-user-pic" style="background-image: url(${data.data[0].imageProfile})">
                         <i class="fa-brands fa-pagelines leaf"></i>
                         <i class="fa-solid fa-medal"></i>
                     </div>
-                    <p class="fw-lighter">Score: ${data.data.length > 0 ? data.data[0].score : ""}</p>
+                    <p class="fw-lighter">Score: ${data.data[0].score}</p>
                 </div>
                 <div id="silver">
-                    <p style="margin: 0">${data.data.length > 1 ? data.data[1].username : ""}</p>
-                    <div id="second-user-pic" style="background-image: url(${data.data.length > 1 ? data.data[1].imageProfile : ""})">
+                    <p style="margin: 0">${data.data[1].username}</p>
+                    <div id="second-user-pic" style="background-image: url(${data.data[1].imageProfile})">
                         <i class="fa-solid fa-medal"></i>
                     </div>
-                    <p class="fw-lighter">Score: ${data.data.length > 1 ? data.data[1].score : ""}</p>
+                    <p class="fw-lighter">Score: ${data.data[1].score}</p>
                 </div>
                 <div id="bronze">
-                    <p style="margin: 0">${data.data.length > 2 ? data.data[2].username : ""}</p>
-                    <div id="third-user-pic" style="background-image: url(${data.data.length > 2 ? data.data[2].imageProfile : ""})">
+                    <p style="margin: 0">${data.data[2].username}</p>
+                    <div id="third-user-pic" style="background-image: url(${data.data[2].imageProfile})">
                         <i class="fa-solid fa-medal"></i>
                     </div>
-                    <p class="fw-lighter">Score: ${data.data.length > 2 ? data.data[2].score : ""}</p>
+                    <p class="fw-lighter">Score: ${data.data[2].score}</p>
                 </div>
             </div>
         </div>

@@ -67,6 +67,25 @@ def is_user_blocked(request):
         return JsonResponse({'etat': False}, status=200)
 
 
+@api_view(['POST'])
+def unblock_user(request):
+    room_id = request.data.get('room_id')
+
+    if not room_id:
+        return JsonResponse({'error': 'Room ID is required'}, status=400)
+
+    try:
+        this_room = Room.objects.get(id=room_id)
+        block = Block.objects.get(room=this_room)
+        block.delete()
+
+        return JsonResponse({'etat': True, 'message': 'User unblocked successfully'}, status=200)
+    except Room.DoesNotExist:
+        return JsonResponse({'error': 'Room does not exist'}, status=404)
+    except Block.DoesNotExist:
+        return JsonResponse({'error': 'No block exists for this room'}, status=404)
+
+
 
 
 

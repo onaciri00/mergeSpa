@@ -17,6 +17,13 @@ export const chatFunction = () => {
     friendsPart.style.display = "none";
     chatPage.style.display = "block";
     const chats = document.querySelector("#chats");
+    document.querySelector('#chat-pic').style.display = 'none';
+    document.querySelector('#input-group-chat').style.display = 'none';
+    document.querySelector('#user-status').style.display = 'none';
+    const ul = document.getElementById('msgs');
+    while (ul.firstChild) {
+        ul.removeChild(ul.firstChild);
+    }
     if (chats) {
         chats.innerHTML = "";
     }
@@ -66,19 +73,93 @@ function createRoomContainer(roomName) {
     msgContainer.appendChild(roomTag);
 }
 
-function showRoom(roomName) {
+function showRoom(recipient, sender) {
     document.querySelectorAll('.my-msg').forEach(log => {
         log.style.display = 'none';
     });
     document.querySelectorAll('.friend-msg').forEach(log => {
         log.style.display = 'none';
     });
-    // checkBlockStatus();
+    checkBlockStatus(recipient, sender);
     // const selectedUser = document.getElementById('msgs');
     // selectedUser.style.display = 'flex';
 }
 
 
+async function block_user(recipient, room_id, sender) {
+    const token = await get_csrf_token();
+    const response = await fetch('http://127.0.0.1:8003/chat/api/block_user/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken':  token
+        },
+        body: JSON.stringify ({
+            'blocker' : sender,
+            'blocked': recipient,
+            'room_id': room_id
+        })
+    });
+    if (response.ok) {
+        const data = await response.json();
+    }
+    else {
+        console.log('fetch block users not working', response.status, response.statusText);
+    }
+}
+
+const unblockUser = async (room_id) => {
+    const token = await get_csrf_token();
+    const response = await fetch('http://127.0.0.1:8003/chat/api/unblock_user/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': token,
+        },
+        body: JSON.stringify({ 'room_id': room_id }),
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        return data.etat;
+    } else {
+        const error = await response.json();
+        return false;
+    }
+};
+
+
+async function is_user_blockes(room_id) {
+    const token = await get_csrf_token();
+    const response = await fetch('http://127.0.0.1:8003/chat/api/is_user_blocked/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken':  token
+        },
+        body: JSON.stringify ({
+            'room_id' : room_id
+        })
+    });
+    if (response.ok) {
+        const data = await response.json();
+        return data;
+    }
+    else {
+
+        console.log('fetch isUserBloked not working', response.status, response.statusText);
+    }
+}
+
+const checkBlockStatus = async (recipient, sender) => {
+    const room_id = await getRoomName(recipient, sender);
+    const data = await is_user_blockes(room_id);
+    if (data.etat) {
+        document.querySelector('#something').disabled = false;
+    } else {
+        document.querySelector('#something').disabled = false;
+    }
+};
 
 const data_characters = async () => {
 
@@ -86,30 +167,61 @@ const data_characters = async () => {
     const thisCurrUser = await newDataFunc();
     const chats1 = document.querySelector("#chats");
     var chatSocket = null;
+    var room_id = 0;
+    var check = "";
 
     characters.forEach(character => {
         const userStr = `
             <p>${character.username}</p>
-            <p class="user-dots"><button class="btn" style="background-color: rgb(0, 12, 45, 0.90);"><i class="fa-solid fa-ellipsis-vertical"></i></button></p>
+            <p class="user-dots">
+                <button class="btn" style="background-color: rgb(0, 12, 45, 0.90);">
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+            </p>
         `;
         const user = document.createElement("div");
         user.classList.add("user");
         user.innerHTML = userStr.trim();
         chats1.appendChild(user);
 
-        const handleDots = () => {
+        const handleDots = async () => {
+            room_id = await getRoomName(character.username, thisCurrUser.username);
+            check = await is_user_blockes(room_id);
             const existingBlock = document.querySelector(".block-style");
             if (existingBlock)
                 existingBlock.remove();
             else {
                 const blockElement = document.createElement("div");
+                blockElement.id = `dropdown-${user}`;
                 blockElement.classList.add("block-style"); // style in css
-                blockElement.innerHTML = "Block";
+                if (check.etat === false)
+                    blockElement.innerHTML = "Block";
+                else
+                    blockElement.innerHTML = "Unblock";
                 user.appendChild(blockElement);
+
+                document.getElementById(`dropdown-${user}`).addEventListener('click', async function(e) {
+                    if (check.etat === false) {
+                        console.log(`room id in block ${room_id}`);
+                        block_user(character.username, room_id, thisCurrUser.username);
+                        alert(`you block ${character.username}`);
+                        // document.querySelector('#something').disabled = true;
+                        blockElement.innerHTML = "Unblock";
+                    }
+                    else {
+                        unblockUser(room_id);
+                        alert(`you unblock ${character.username}`);
+                        blockElement.innerHTML = "Block";
+                        document.querySelector('#something').disabled = false;
+                    }
+                });
             }
+
         }
+
         const dots = user.querySelector(".user-dots button");
         dots.addEventListener("click", handleDots);
+
 
         const handleUserClick = async(userElement) => {
             // =========== just style ================
@@ -122,9 +234,18 @@ const data_characters = async () => {
             });
             userElement.style.boxShadow = "0 0 5px #9bf9ff";
             userElement.classList.add("selected-user");
-            document.querySelector("#chat-pic").style.backgroundImage = `url("${character.imageProfile}")`;
+            document.querySelector("#chat-pic").style.display = 'block'
+            document.querySelector('#input-group-chat').style.display = 'flex'
+            document.querySelector('#user-status').style.display = 'block';
+            const picTag = document.querySelector("#chat-pic")
+            picTag.style.backgroundImage = `url("${character.imageProfile}")`;
             document.querySelector("#secondd h3").innerHTML = character.username;
 
+            picTag.addEventListener('click',  () => {
+                chatPage.style.display = "none";
+                profileId.style.display = "flex";
+                
+            });
             // =============== Modify here ==============
             console.log("user id ", character.id);
             const room_id = await getRoomName(character.username, thisCurrUser.username);
@@ -132,7 +253,7 @@ const data_characters = async () => {
             // if (!document.getElementById(`chat-log-${room_id}`)) {
             //     createRoomContainer(room_id);
             // }
-            showRoom(room_id);
+            showRoom(character.username, thisCurrUser.username);
             initWebSocket(room_id, character.username);
         };
         user.addEventListener("click", async function () { handleUserClick(user)} );
@@ -162,22 +283,24 @@ const data_characters = async () => {
             
             const data = JSON.parse(e.data);
             const message = data['message'];
-            // // const messageBlock = data['message_block'];
+            const messageBlock = data['message_block'];
             const author = data['author'];
-            // // const isBlocked = data['is_blocked'];
+            const isBlocked = data['is_blocked'];
     
-            // // if (isBlocked) {
-            // //     alert(messageBlock);
-            // // }
-            const msgTag = document.createElement('div');
-            msgTag.textContent = message;
-            if (author === thisCurrUser.username) {
-                msgTag.classList.add('my-msg');
+            if (isBlocked) {
+                alert(messageBlock);
             }
-            else {
-                msgTag.classList.add('friend-msg');
+            else{
+                const msgTag = document.createElement('div');
+                msgTag.textContent = message;
+                if (author === thisCurrUser.username) {
+                    msgTag.classList.add('my-msg');
+                }
+                else {
+                    msgTag.classList.add('friend-msg');
+                }
+                document.getElementById('msgs').appendChild(msgTag);
             }
-            document.getElementById('msgs').appendChild(msgTag);
     
         }
     
@@ -195,7 +318,8 @@ const data_characters = async () => {
             var messageinput = document.querySelector('#something');
             var message = messageinput.value;
     
-            if (message !== "") {
+            if (message !== "" && chatSocket.readyState === WebSocket.OPEN) {
+                console.log('hello socket');
                 chatSocket.send(JSON.stringify ({
                   'message': message,
                   'author' : thisCurrUser.username,
@@ -204,6 +328,9 @@ const data_characters = async () => {
                 }));
                 messageinput.value = '';
                 scrollToBottom();
+            }
+            else{
+                messageinput.value = '';
             }
         };
     }

@@ -64,10 +64,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 	app.append(game_over);
 	document.getElementById("startGame1").addEventListener("click", function() {
 		wait_page();
-		if (gameType == "remote")
-			fetchRoom();
-		else
-			createRoom();
+		fetchRoom();
 	});
 
 	window.addEventListener("beforeunload", (event) => {
@@ -77,6 +74,13 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		}
 	});
 	function createRoom() {
+	    // fetch('http://127.0.0.1:8002/api/prooms/', {
+	    //     method: 'POST',
+	    //     headers: {
+	    //         'Content-Type': 'application/json',
+	    //     },
+	    //     body: JSON.stringify({"code": generateRoomCode()})
+	    // })
 		fetch('http://127.0.0.1:8002/api/prooms/', {
 			method: 'POST',
 			headers: {
@@ -214,7 +218,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		console.log("pmatch  is ", pmatch)
 		if (pmatch < 4 ){
 			console.log("QUARTET")
-			createRoom();
+			fetchRoom();
 			app.style.display = "flex";
 			startContainer.classList.remove("active");
 			startContainer.style.display = "none";
@@ -222,7 +226,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		}
 		else if (pmatch < 6 && pmatch > 3){
 			console.log("Semi Final");
-			createRoom();
+			fetchRoom();
 			app.style.display = "flex";
 			startContainer.classList.remove("active");
 			startContainer.style.display = "none";
@@ -230,7 +234,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		}
 		else{
 			console.log("Final")
-			createRoom();
+			fetchRoom();
 			app.style.display = "flex";
 			startContainer.classList.remove("active");
 			startContainer.style.display = "none";
@@ -242,7 +246,6 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		app.style.display = "none";
 		let Tournament = document.querySelector('.allbrackets');
 		Tournament.style.display = "flex";
-		resetDOM();
 		// update player 
 	}
 
