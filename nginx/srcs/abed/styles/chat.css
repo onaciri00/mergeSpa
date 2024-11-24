@@ -141,16 +141,27 @@
 }
 
 .block-style {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     border: 2px solid black;
     width: 138px !important;
-    height: 50px !important;
-    background-color: white;
-    /* background-color: #9a2833; */
+    height: 100px !important;
+    background-color: #211b1b54;
     color: #9a2833;
     position: absolute;
     right: -3px;
     top: 45%;
     z-index: 1000;
+    overflow-y: auto;
+}
+
+.block-child {
+    background-color: royalblue;
+    height: 40px;
+    width: 100%;
+    border: none;
+    box-shadow: 0 0 2px white;
 }
 
 .dropdown {

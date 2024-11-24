@@ -170,6 +170,7 @@ const data_characters = async () => {
     var room_id = 0;
     var check = "";
 
+    console.log(characters);
     characters.forEach(character => {
         const userStr = `
             <p>${character.username}</p>
@@ -191,13 +192,23 @@ const data_characters = async () => {
             if (existingBlock)
                 existingBlock.remove();
             else {
+                const blockContainer = `
+                    
+                    <button class="block-child">Play</button>
+                `;
                 const blockElement = document.createElement("div");
-                blockElement.id = `dropdown-${user}`;
+                const blockTag = document.createElement('button');
+                blockTag.innerHTML = 'Block';
+                blockTag.id = `dropdown-${user}`;
+                blockTag.classList.add('block-child');
                 blockElement.classList.add("block-style"); // style in css
+                blockElement.innerHTML = blockContainer.trim();
+                console.log("block container :", blockElement.innerHTML);
                 if (check.etat === false)
-                    blockElement.innerHTML = "Block";
+                    blockTag.innerHTML = "Block";
                 else
-                    blockElement.innerHTML = "Unblock";
+                    blockTag.innerHTML = "Unblock";
+                blockElement.appendChild(blockTag);
                 user.appendChild(blockElement);
 
                 document.getElementById(`dropdown-${user}`).addEventListener('click', async function(e) {
@@ -206,13 +217,13 @@ const data_characters = async () => {
                         block_user(character.username, room_id, thisCurrUser.username);
                         alert(`you block ${character.username}`);
                         // document.querySelector('#something').disabled = true;
-                        blockElement.innerHTML = "Unblock";
+                        blockTag.innerHTML = "Unblock";
                     }
                     else {
                         unblockUser(room_id);
                         alert(`you unblock ${character.username}`);
-                        blockElement.innerHTML = "Block";
-                        document.querySelector('#something').disabled = false;
+                        blockTag.innerHTML = "Block";
+                        // document.querySelector('#something').disabled = false;
                     }
                 });
             }
@@ -250,9 +261,6 @@ const data_characters = async () => {
             console.log("user id ", character.id);
             const room_id = await getRoomName(character.username, thisCurrUser.username);
             console.log(`Room name: ${room_id}`);
-            // if (!document.getElementById(`chat-log-${room_id}`)) {
-            //     createRoomContainer(room_id);
-            // }
             showRoom(character.username, thisCurrUser.username);
             initWebSocket(room_id, character.username);
         };
@@ -287,10 +295,6 @@ const data_characters = async () => {
             const author = data['author'];
             const isBlocked = data['is_blocked'];
     
-            if (isBlocked) {
-                alert(messageBlock);
-            }
-            else{
                 const msgTag = document.createElement('div');
                 msgTag.textContent = message;
                 if (author === thisCurrUser.username) {
@@ -300,7 +304,6 @@ const data_characters = async () => {
                     msgTag.classList.add('friend-msg');
                 }
                 document.getElementById('msgs').appendChild(msgTag);
-            }
     
         }
     
@@ -319,7 +322,6 @@ const data_characters = async () => {
             var message = messageinput.value;
     
             if (message !== "" && chatSocket.readyState === WebSocket.OPEN) {
-                console.log('hello socket');
                 chatSocket.send(JSON.stringify ({
                   'message': message,
                   'author' : thisCurrUser.username,
