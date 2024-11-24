@@ -184,7 +184,7 @@ const data_characters = async () => {
         user.classList.add("user");
         user.innerHTML = userStr.trim();
         chats1.appendChild(user);
-
+        
         const handleDots = async () => {
             room_id = await getRoomName(character.username, thisCurrUser.username);
             check = await is_user_blockes(room_id);
@@ -192,38 +192,42 @@ const data_characters = async () => {
             if (existingBlock)
                 existingBlock.remove();
             else {
+                let blockEtat = "Block";
                 const blockContainer = `
-                    
-                    <button class="block-child">Play</button>
+                    <button id="play-${character.username}" class="block-child">Play</button>
+                    <button id="dropdown-${character.username}" class="block-child">${blockEtat}</button>
                 `;
                 const blockElement = document.createElement("div");
-                const blockTag = document.createElement('button');
-                blockTag.innerHTML = 'Block';
-                blockTag.id = `dropdown-${user}`;
-                blockTag.classList.add('block-child');
                 blockElement.classList.add("block-style"); // style in css
-                blockElement.innerHTML = blockContainer.trim();
-                console.log("block container :", blockElement.innerHTML);
                 if (check.etat === false)
-                    blockTag.innerHTML = "Block";
+                    blockEtat = "Block";
                 else
-                    blockTag.innerHTML = "Unblock";
-                blockElement.appendChild(blockTag);
+                    blockEtat = "Unblock";
+                blockElement.innerHTML = blockContainer.trim();
                 user.appendChild(blockElement);
 
-                document.getElementById(`dropdown-${user}`).addEventListener('click', async function(e) {
+                // on click play buuton
+                document.getElementById(`play-${character.username}`).addEventListener('click', async function (e) {
+                   
+                    chatSocket.send(JSON.stringify({
+                        'type': 'requestFriend',
+                        'recipient': character.username,
+                        'sender': thisCurrUser.username
+                    }));
+                });
+
+                // on click block buuton 
+                document.getElementById(`dropdown-${character.username}`).addEventListener('click', async function(e) {
                     if (check.etat === false) {
-                        console.log(`room id in block ${room_id}`);
+                        console.log(`room id in block ${user}`);
                         block_user(character.username, room_id, thisCurrUser.username);
                         alert(`you block ${character.username}`);
-                        // document.querySelector('#something').disabled = true;
                         blockTag.innerHTML = "Unblock";
                     }
                     else {
                         unblockUser(room_id);
                         alert(`you unblock ${character.username}`);
                         blockTag.innerHTML = "Block";
-                        // document.querySelector('#something').disabled = false;
                     }
                 });
             }
@@ -248,9 +252,10 @@ const data_characters = async () => {
             document.querySelector("#chat-pic").style.display = 'block'
             document.querySelector('#input-group-chat').style.display = 'flex'
             document.querySelector('#user-status').style.display = 'block';
-            const picTag = document.querySelector("#chat-pic")
+            const picTag = document.querySelector("#chat-pic");
             picTag.style.backgroundImage = `url("${character.imageProfile}")`;
             document.querySelector("#secondd h3").innerHTML = character.username;
+        
 
             picTag.addEventListener('click',  () => {
                 chatPage.style.display = "none";
@@ -269,7 +274,6 @@ const data_characters = async () => {
 
     function initWebSocket(roomId, username) {
 
-        
         if (chatSocket !== null) {
             chatSocket.close();
             console.log('socket closed');
@@ -294,6 +298,23 @@ const data_characters = async () => {
             const messageBlock = data['message_block'];
             const author = data['author'];
             const isBlocked = data['is_blocked'];
+
+            if (data.type === 'play_invitation'){
+
+                const confirm = confirm(`you have been invited to pong match by ${author}`);
+                
+                chatSocket.send(JSON.stringify({
+                    'type': 'response',
+                    'sender' : author,
+                    'recipient': username,
+                    'confirmation': confirm
+                }))
+            }
+            if (data.type === 'response_invitation'){
+
+                const confirm = data.confirmation
+
+            }
     
                 const msgTag = document.createElement('div');
                 msgTag.textContent = message;
@@ -331,7 +352,7 @@ const data_characters = async () => {
                 messageinput.value = '';
                 scrollToBottom();
             }
-            else{
+            else {
                 messageinput.value = '';
             }
         };

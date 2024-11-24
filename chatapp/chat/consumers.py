@@ -48,13 +48,35 @@ class ChatConsumer(AsyncWebsocketConsumer):
         content = text_data_json.get('message', '')
         room_id = text_data_json.get('roomId', '')
 
-        print(f"Sender: {sender}, recipient: {recipient} ,Message: {content}, Room: {room_id}")
-
         room = await sync_to_async(Room.objects.get)(id=room_id)
         message = await sync_to_async(Message.objects.create)(
             author=sender,
             content=content,
             room=room
+        )
+
+        if message['type'] == 'requestFriend':
+            recipient = message['recipient']
+            sender = message['sender']
+            await self.channel_layer.group_send(
+            f"user_{recipient}",
+            {
+                "type": "play_invitation",
+                "author": sender,
+            }
+        )
+
+        if message['type'] == 'response':
+            recipient = message['recipient']
+            sender = message['sender']
+            confirmation = message['confirmation']
+            await self.channel_layer.group_send(
+            f"user_{sender},
+            {
+                "type": "response_invitation",
+                "author": sender,
+                "confirmation": confirmation
+            }
         )
 
         await self.channel_layer.group_send(
