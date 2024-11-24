@@ -491,6 +491,7 @@ function startGame() {
         }
     }
     const playAgain = ()=> {
+        disconnect();
         is_gameOver = false;
         currentTurn = 'X'; 
         console.log('playAgain');

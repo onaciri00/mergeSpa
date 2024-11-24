@@ -12,12 +12,10 @@ document.addEventListener("DOMContentLoaded", () =>  {
 	img.src = "./img2.jpg";
 	let semi = [];
 	let final = [];
-	let isTourn = false;
-	let gameStart = false;
-	let tour1;
-	let tour2;
 	let bracket;
 	let pmatch = 0;
+	let isTourn = false;
+	let gameStart = false;
 	let ballPosition = { x: 400, y: 200 }; 
 	let ballRadius = 10;
 	let paddle1 = {
@@ -100,8 +98,11 @@ document.addEventListener("DOMContentLoaded", () =>  {
 	    });
 	}
 
-	function disconnect() {
-	    socket.close();
+	function disconnect()
+	{
+		if (socket.readyState === WebSocket.OPEN) {
+			socket.close();
+		}
 	}
 
 	function fetchRoom() {
@@ -241,6 +242,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		}
 	}
 	function update_tournment(){
+		console.log("this working ...");
 		app.style.display = "none";
 		let Tournament = document.querySelector('.allbrackets');
 		Tournament.style.display = "flex";
@@ -270,10 +272,15 @@ document.addEventListener("DOMContentLoaded", () =>  {
 					else{
 						semi.push(bracket[1]);
 					}
-					document.getElementById("1stbracket").value = semi[0];
-					document.getElementById("2ndbracket").value = semi[1];
-					document.getElementById("3rdbracket").value = semi[2];
-					document.getElementById("4thbracket").value = semi[3];
+					console.log("semi lent ", semi.length, "semi elemnt ", semi);
+					if (semi.length == 1)
+						document.getElementById("1stbracket").value = semi[0];
+					else if (semi.length == 2) 
+						document.getElementById("2ndbracket").value = semi[1];
+					else if (semi.length == 3)
+						document.getElementById("3rdbracket").value = semi[2];
+					else if (semi.length == 4)
+						document.getElementById("4thbracket").value = semi[3];
 					if (bracket.length - 2 > 0)
 						bracket.splice(0, 2);
 				}
@@ -282,8 +289,10 @@ document.addEventListener("DOMContentLoaded", () =>  {
 						final.push(semi[0]);
 					else
 						final.push(semi[1]);
-					document.getElementById("Finalist1").value = final[0];
-					document.getElementById("Finalist2").value = final[1];
+					if (final.length == 1)
+						document.getElementById("Finalist1").value = final[0];
+					else if (final.length == 2)
+						document.getElementById("Finalist2").value = final[1];
 					semi.splice(0, 2);
 				}
 				if (pmatch == 7)
@@ -300,7 +309,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 				update_tournment();
 			}
 		}
-		else if (gameType == 'remote')
+		else
 		{
 
 			if (pad_num == parseInt(winner))
@@ -392,7 +401,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 				socket.send(JSON.stringify({ 
 					type: "move", 
 					move: "Up", 
-					pad_num: 1 
+					pad_num: 0 
 				}));
 			}
 			else if (gameStart && (event.key === "ArrowDown"))
@@ -400,14 +409,14 @@ document.addEventListener("DOMContentLoaded", () =>  {
 				socket.send(JSON.stringify({ 
 					type: "move", 
 					move: "Down", 
-					pad_num: 1 
+					pad_num: 0 
 				}));
 			}
 			if (gameStart && (event.key === "w" || event.key === "W")) {
 				socket.send(JSON.stringify({ 
 					type: "move", 
 					move: "Up", 
-					pad_num: 0 
+					pad_num: 1 
 				}));
 			}
 			else if (gameStart && (event.key === "s" || event.key === "S"))
@@ -415,7 +424,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 				socket.send(JSON.stringify({ 
 					type: "move", 
 					move: "Down", 
-					pad_num: 0 
+					pad_num: 1 
 				}));
 			}
 
@@ -440,7 +449,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 				socket.send(JSON.stringify({ 
 					type: "move", 
 					move: "Stop", 
-					pad_num: 1
+					pad_num: 0
 				}));
 			}
 			else if (gameStart && (event.key === "w" || event.key === "W" || event.key === "s" || event.key === "S" ))
@@ -448,7 +457,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 				socket.send(JSON.stringify({ 
 					type: "move", 
 					move: "Stop", 
-					pad_num: 0
+					pad_num: 1
 				}));
 			}
 		}
@@ -530,6 +539,8 @@ document.addEventListener("DOMContentLoaded", () =>  {
 			header.style.display = "none";
 			parent.append(app);
 			app.style.display = "flex";
+			startContainer.classList.add("active");
+			startContainer.style.display = "block";
 		}
 
 		remote.addEventListener("click", handleRemoteGame);
@@ -556,24 +567,40 @@ document.addEventListener("DOMContentLoaded", () =>  {
 			header.style.display = "none";
 			parent.append(app);
 			app.style.display = "flex";
+			startContainer.classList.add("active");
+			startContainer.style.display = "block";
 		}
 		twoPlayers.addEventListener("click", handleLocaleGame);
 		const closeGame = () => {
 			parent.style.display = "none";
-			// playAgain();
+			startContainer.classList.remove("active");
+			startContainer.style.display = "none";
+			gameType = "";
+			app.style.display = "none";
+			playAgain();
 		}
 
 		closeBtn.addEventListener("click", closeGame);
 	}
 
 	const playAgain = () =>{
+		disconnect();
 		document.querySelector("#play-again").style.display = "none";
 		roomCode = "";
 		room_is_created = false;
 		pad_num = 0;
+		semi = [];
+		final = [];
+		bracket = [];
+		pmatch = 0;
 		game_over.style.display = "none";
+		gameContainer.style.display = "none";
 		startContainer.classList.add("active");
 	    startContainer.style.display = "block";
+		const TournamentContainer = document.querySelector('.container');
+		TournamentContainer.style.display = "none";
+
+
 	}
 
     document.querySelector("#play-again").addEventListener("click", playAgain);
