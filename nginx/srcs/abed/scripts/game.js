@@ -179,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 				}
 			else if (data.event == 'END')
 				Game_over(data.message);
-			else if (data.event == "LEFT")
+			else if (data.event == "LEFT" && gameType == "remote")
 				left_game(data.pad_num);
 		};
 	}
@@ -309,7 +309,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 				update_tournment();
 			}
 		}
-		else
+		else if (gameType == "remote")
 		{
 
 			if (pad_num == parseInt(winner))
@@ -328,6 +328,24 @@ document.addEventListener("DOMContentLoaded", () =>  {
 					game_over.style.backgroundColor = "#0095DD";
 			}
 			document.querySelector("#play-again").style.display = "block";
+		}
+		else 
+		{
+			if (0 == parseInt(winner))
+				{
+					gameContainer.style.display = "none";
+					game_over.style.display = "block";
+					game_over.style.backgroundColor = "#0095DD";
+					document.getElementById("result1").innerHTML = "Blue  Won";
+				}
+				else
+				{
+					gameContainer.style.display = "none";
+					game_over.style.display = "block";
+					document.getElementById("result1").innerHTML = "Red  Won";
+
+				}
+				document.querySelector("#play-again").style.display = "block";
 		}
 	}
 
