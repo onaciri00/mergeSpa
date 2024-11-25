@@ -20,8 +20,13 @@
 .pressEnter
 {
     position: absolute;
-    bottom: 0;
-    right: 0;    
+    border-radius: 10px;
+    bottom: 1%;
+    right: 1%;
+    color: whitesmoke;
+    border: 1px solid whitesmoke;
+    background: linear-gradient(274deg, rgba(2, 0, 36, 1) 0%, rgb(49 6 6) 0%, rgb(0, 21, 52) 100%);
+    padding: 20px;
 }
 
 #player1Score {
@@ -319,7 +324,7 @@ canvas
 #choose-mode {
     display: none;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     flex-direction: column;
     position: absolute;
     z-index: 100;
