@@ -8,9 +8,15 @@ const player5 = document.getElementById("player5");
 const player6 = document.getElementById("player6");
 const player7 = document.getElementById("player7");
 const player8 = document.getElementById("player8");
+const commingUp = document.createElement("div");
+commingUp.className = "comingUp";
+commingUp.innerHTML = `
+		<h1 id="announce">Next Match:</h1>
+		<h1>next</h1>
+	`;
 let sameName = false;
 let bracket = [];
-
+// document.getElementById(".submit").disabled = true;
 
 export function rplayers(){
 	return bracket;
@@ -85,6 +91,10 @@ const validateInput = () =>{
 	{
 		hide(document.querySelector('.container'));
 		show(document.querySelector('.allbrackets'));
+		// show(document.querySelector('.comingUp'));
+		commingUp.style.display = "block";
+		const parent = document.querySelector(".allbrackets");
+		parent.append(commingUp);
 		fill("player1B", pValue, pValue.length, bracket);
 		fill("player2B", pValue, pValue.length, bracket);
 		fill("player3B", pValue, pValue.length, bracket);
@@ -93,6 +103,7 @@ const validateInput = () =>{
 		fill("player6B", pValue, pValue.length, bracket);
 		fill("player7B", pValue, pValue.length, bracket);
 		fill("player8B", pValue, pValue.length, bracket);
+		document.getElementById("submit").disabled = false;
 	}
 	console.log("brackets=====>");
 	console.log(bracket);

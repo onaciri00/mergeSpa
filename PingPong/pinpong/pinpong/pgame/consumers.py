@@ -21,7 +21,7 @@ class ball:
         self.y = y
         self.r = 10
         self.angl = 35
-        self.speed = 1
+        self.speed = 1.25
         self.vx = math.cos(self.angl * math.pi / 180) * self.speed
         self.vy = math.sin(self.angl * math.pi / 180) * self.speed
     def serialize_ball(self):
@@ -68,8 +68,6 @@ class paddle:
             'y': self.y,
             'score':self.score,
         }
-
-
 
 class   Match:
     def __init__(self, N):
@@ -247,7 +245,7 @@ class PingPongConsumer(AsyncWebsocketConsumer):
         match = Match(0)  
         print("gsme type is ", self.gameType, flush=True)
         while True:
-            if match.p1.score == 1:
+            if match.p1.score == 3:
                 await self.channel_layer.group_send(
                 self.room_group_name,
                 {
@@ -257,7 +255,7 @@ class PingPongConsumer(AsyncWebsocketConsumer):
                 }
             )
                 break
-            elif  match.p2.score == 1:
+            elif  match.p2.score == 3:
                 await self.channel_layer.group_send(
                 self.room_group_name,
                 {

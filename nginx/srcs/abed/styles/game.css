@@ -13,6 +13,11 @@
     margin: 50px;
 }
 
+.comingUp{
+    display: none;
+    padding-bottom: 100%;
+    position: absolute;
+}
 
 #player1Score {
 	color: #ff0000;

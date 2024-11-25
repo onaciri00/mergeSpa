@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 	const main_counter = document.getElementById("main_counter");
 	const gameContainer = document.getElementById("game-container1")
 	const game_over = document.getElementById("game_over"); 
+	
 	startContainer.className = "start-container1";
 	waitContainer.className = "wait-container1";
 	let gameType;
@@ -57,6 +58,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 	</div>
 	`;
 
+	
 	app.appendChild(startContainer);
 	app.appendChild(waitContainer);
 	app.append(game_over);
@@ -242,7 +244,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		}
 	}
 	function update_tournment(){
-		console.log("this working ...");
+		console.log("this is working ...");
 		app.style.display = "none";
 		let Tournament = document.querySelector('.allbrackets');
 		Tournament.style.display = "flex";
@@ -272,6 +274,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 					else{
 						semi.push(bracket[1]);
 					}
+					// document.querySelector("#announce").innerHTML = "Next Match:<br /></p><p><br />"
 					console.log("semi lent ", semi.length, "semi elemnt ", semi);
 					if (semi.length == 1)
 						document.getElementById("1stbracket").value = semi[0];
@@ -569,6 +572,8 @@ document.addEventListener("DOMContentLoaded", () =>  {
 			header.style.display = "none";
 			TournamentContainer.style.display = "flex";
 			parent.append(TournamentContainer);
+			// commingUp.style.display = "flex";
+			// TournamentContainer.append(commingUp);
 			console.log("This is Workng");
 			bracket = rplayers();
 			container.style.display = "none";
@@ -595,6 +600,13 @@ document.addEventListener("DOMContentLoaded", () =>  {
 			startContainer.style.display = "none";
 			gameType = "";
 			app.style.display = "none";
+			counter.classList.add('hide');
+	
+			nums.forEach(num => {
+				num.classList.value = '';
+			});
+	
+			nums[0].classList.add('out');
 			playAgain();
 		}
 
