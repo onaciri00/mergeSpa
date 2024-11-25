@@ -12,9 +12,13 @@ const commingUp = document.createElement("div");
 commingUp.className = "comingUp";
 commingUp.innerHTML = `
 	<h1>Next Match: </h1>
-	<h1 id="announce1">Next Match:</h1>
-	<h1 id="announce2">Next Match:</h1>
-	<h2> Press enter....<h2>
+	<div class="announce">
+		<h1 id="announce1">Next Match:</h1>
+		<h1 id="announce2">Next Match:</h1>
+	</div>
+	<div class="pressEnter">
+		<h2> Press enter....<h2>
+	</div>
 	`;
 let sameName = false;
 let bracket = [];
@@ -101,13 +105,13 @@ const validateInput = () =>{
 	}
 	else
 	{
+		commingUp.style.display = "flex";
+		const parent = document.querySelector("#choose-mode");
+		parent.append(commingUp);
 		console.log("IN prog");
 		hide(document.querySelector('.container'));
 		show(document.querySelector('.allbrackets'));
 		// show(document.querySelector('.comingUp'));
-		commingUp.style.display = "flex";
-		const parent = document.querySelector("#choose-mode");
-		parent.append(commingUp);
 		fill("player1B", pValue, pValue.length, bracket);
 		fill("player2B", pValue, pValue.length, bracket);
 		let curr_matach1 = " Blue is " + bracket[0];

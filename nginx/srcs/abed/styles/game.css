@@ -13,10 +13,15 @@
     margin: 50px;
 }
 
-.comingUp{
+.announce{
     display: none;
-    padding-bottom: 100%;
+}
+
+.pressEnter
+{
     position: absolute;
+    bottom: 0;
+    right: 0;    
 }
 
 #player1Score {
@@ -313,6 +318,7 @@ canvas
 
 #choose-mode {
     display: none;
+    align-items: center;
     justify-content: space-between;
     flex-direction: column;
     position: absolute;
