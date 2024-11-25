@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 	let pmatch = 0;
 	let isTourn = false;
 	let gameStart = false;
+	let noMatch = false;
 	let ballPosition = { x: 400, y: 200 }; 
 	let ballRadius = 10;
 	let paddle1 = {
@@ -39,7 +40,36 @@ document.addEventListener("DOMContentLoaded", () =>  {
 	const main_counter = document.getElementById("main_counter");
 	const gameContainer = document.getElementById("game-container1")
 	const game_over = document.getElementById("game_over"); 
-	
+	//newwwwwwwwwwwwwwwww 
+	const closeBtn = document.createElement("button");
+	closeBtn.type = "button";
+	closeBtn.classList.add("btn-close");
+	closeBtn.ariaLabel = "Close";
+	const bodyElement = document.querySelector("body");
+	const header = document.createElement("h1");
+	header.id = "header-mode";
+	header.innerHTML = `CHOOSE MODE`;
+	const parent = document.createElement("div");
+	const container = document.createElement("div");
+	container.id = "cont-modes";
+	parent.id = "choose-mode";
+	const twoPlayers = document.createElement("div");
+	twoPlayers.id = "two-players";
+	twoPlayers.classList.add("mode");
+	twoPlayers.innerHTML = `Two Players.`
+	const tournament = document.createElement("div");
+	tournament.id = "tournament";
+	tournament.classList.add("mode");
+	tournament.innerHTML = `Tournament.`;
+	const remote = document.createElement("div");
+	remote.id = "remote";
+	remote.classList.add("mode");
+	remote.innerHTML = `Remote.`
+	container.append(twoPlayers, tournament, remote);
+	parent.append(header, container);
+	bodyElement.append(parent);
+	parent.append(header, container, closeBtn);
+
 	startContainer.className = "start-container1";
 	waitContainer.className = "wait-container1";
 	let gameType;
@@ -181,8 +211,11 @@ document.addEventListener("DOMContentLoaded", () =>  {
 				}
 			else if (data.event == 'END')
 				Game_over(data.message);
-			else if (data.event == "LEFT" && gameType == "remote")
+			else if (data.event == "LEFT" && gameType == "remote"){
+				noMatch = true;
 				left_game(data.pad_num);
+			}
+
 		};
 	}
 	
@@ -208,10 +241,11 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		runAnimation();
 		setTimeout(() => {
 			socket.send(JSON.stringify({ type: "start"}));
-			gameContainer.style.display = "block";
+			if (!noMatch)
+				gameContainer.style.display = "block";
 			renderGame();
 			
-		}, 3000)
+		}, 3500)
 		gameStart = true;
 
 	}
@@ -274,7 +308,6 @@ document.addEventListener("DOMContentLoaded", () =>  {
 					else{
 						semi.push(bracket[1]);
 					}
-					// document.querySelector("#announce").innerHTML = "Next Match:<br /></p><p><br />"
 					console.log("semi lent ", semi.length, "semi elemnt ", semi);
 					if (semi.length == 1)
 						document.getElementById("1stbracket").value = semi[0];
@@ -312,6 +345,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 				update_tournment();
 			}
 		}
+
 		else if (gameType == "remote")
 		{
 
@@ -357,10 +391,18 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		if (left_pad == pad_num){
 			console.log("you lose");
 		}
-		else{
-			console.log("you ve Won");
+		else
+		{
+			if (left_pad == 0){
+				Game_over(1);
+			}
+			else{
+				Game_over(0);
+			}
 		}
 	}
+
+
 
 	function generateRoomCode() {
 	    return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -524,35 +566,13 @@ document.addEventListener("DOMContentLoaded", () =>  {
 	/* ************************************ Abed Changes ******************************************* */
 	
 	const handlePlayBtn = () => {
-		const closeBtn = document.createElement("button");
-		closeBtn.type = "button";
-		closeBtn.classList.add("btn-close");
-		closeBtn.ariaLabel = "Close";
-		const bodyElement = document.querySelector("body");
-		const header = document.createElement("h1");
-		header.id = "header-mode";
-		header.innerHTML = `CHOOSE MODE`;
-		const parent = document.createElement("div");
-		const container = document.createElement("div");
-		container.id = "cont-modes";
-		parent.id = "choose-mode";
-		const twoPlayers = document.createElement("div");
-		twoPlayers.id = "two-players";
-		twoPlayers.classList.add("mode");
-		twoPlayers.innerHTML = `Two Players.`
-		const tournament = document.createElement("div");
-		tournament.id = "tournament";
-		tournament.classList.add("mode");
-		tournament.innerHTML = `Tournament.`;
-		const remote = document.createElement("div");
-		remote.id = "remote";
-		remote.classList.add("mode");
-		remote.innerHTML = `Remote.`
-		container.append(twoPlayers, tournament, remote);
+
+		// --------------------------------- //
 		parent.append(header, container);
 		bodyElement.append(parent);
 		parent.append(header, container, closeBtn);
-		// --------------------------------- //
+		header.style.display = "flex";
+		container.style.display = "flex";
 		parent.style.display = "flex";
 		const handleRemoteGame = () => {
 			gameType = 'remote';
@@ -572,8 +592,6 @@ document.addEventListener("DOMContentLoaded", () =>  {
 			header.style.display = "none";
 			TournamentContainer.style.display = "flex";
 			parent.append(TournamentContainer);
-			// commingUp.style.display = "flex";
-			// TournamentContainer.append(commingUp);
 			console.log("This is Workng");
 			bracket = rplayers();
 			container.style.display = "none";
@@ -607,6 +625,10 @@ document.addEventListener("DOMContentLoaded", () =>  {
 			});
 	
 			nums[0].classList.add('out');
+			const TournamentContainer2 = document.querySelector('.allbrackets');
+			TournamentContainer2.style.display = "none";
+			// const parent = document.querySelector("#choose-mode");
+			// parent.append(TournamentContainer2);
 			playAgain();
 		}
 
@@ -629,8 +651,6 @@ document.addEventListener("DOMContentLoaded", () =>  {
 	    startContainer.style.display = "block";
 		const TournamentContainer = document.querySelector('.container');
 		TournamentContainer.style.display = "none";
-
-
 	}
 
     document.querySelector("#play-again").addEventListener("click", playAgain);

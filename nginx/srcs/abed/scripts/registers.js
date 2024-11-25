@@ -11,15 +11,18 @@ const player8 = document.getElementById("player8");
 const commingUp = document.createElement("div");
 commingUp.className = "comingUp";
 commingUp.innerHTML = `
-		<h1 id="announce">Next Match:</h1>
-		<h1>next</h1>
+	<h1>Next Match</h1>
+	<h1 id="announce1">Next Match:</h1>
+	<h2> Press enter....<h2>
 	`;
 let sameName = false;
 let bracket = [];
 // document.getElementById(".submit").disabled = true;
 
 export function rplayers(){
-	return bracket;
+	let retBracket = bracket;
+	bracket = [];
+	return retBracket;
 }
 
 const handleSubmit = (e) => {
@@ -32,6 +35,7 @@ const hide = (element) => {
 }
 
 const show = (element) => {
+	console.log("IN prog2");
 	element.style.display = 'flex';
 	const parent = document.querySelector("#choose-mode");
 	parent.append(element);
@@ -89,21 +93,99 @@ const validateInput = () =>{
 	}
 	else
 	{
+		console.log("IN prog");
+		const allbrackets = document.createElement("div");
+		commingUp.className = "allbrackets";
+		commingUp.innerHTML = `
+            <div class="fistbracketss">
+                <form id="Match1" class="match-unit">
+                    <h2>1st Match</h2>
+                    <div class = "input-control">
+                        <input id="player1B" name="1st player" type="text" disabled>
+                    </div>
+                    <div class = "input-control">
+                        <input id="player2B" name="2st player" type="text" disabled>
+                    </div>
+                </form>
+                <form id="Match2" class="match-unit">
+                    <h2>2nd Match</h2>
+                    <div class = "input-control">
+                        <input id="player3B" name="3rd player" type="text" disabled>
+                    </div>
+                    <div class = "input-control">
+                        <input id="player4B" name="=4th player" type="text" disabled>
+                    </div>
+                </form>
+                <form id="Match3" class="match-unit">
+                    <h2>3rd Match</h2>
+                    <div class = "input-control">
+                        <input id="player5B" name="5th player" type="text" disabled>
+                    </div>
+                    <div class = "input-control">
+                        <input id="player6B" name="6th player" type="text" disabled>
+                    </div>
+                </form>
+                <form id="Match4" class="match-unit">
+                    <h2>4th Match</h2>
+                    <div class = "input-control">
+                        <input id="player7B" name="7th player" type="text" disabled>
+                    </div>
+                    <div class = "input-control">
+                        <input id="player8B" name="8th player" type="text" disabled>
+                    </div>
+                </form>
+            </div>
+            <div class="semifinals">
+                <form id="Semi-final1" class="match-unit">
+                    <h2>Semi Final</h2>
+                    <div class = "input-control">
+                        <input id="1stbracket" name="1st Bracket Winner" type="text" disabled>
+                    </div>
+                    <div class = "input-control">
+                        <input id="2ndbracket" name="2nd Bracket Winner" type="text" disabled>
+                    </div>
+                </form>
+                <form id="Semi-final2" class="match-unit">
+                    <h2>Semi Final</h2>
+                    <div class = "input-control">
+                        <input id="3rdbracket" name="3rd Bracket Winner" type="text" disabled>
+                    </div>
+                    <div class = "input-control">
+                        <input id="4thbracket" name="4th Bracket Winner" type="text" disabled>
+                    </div>
+                </form>
+            </div>
+            <div class="Finals">
+                <form id="Finals" class="match-unit">
+                    <h2>Finals</h2>
+                    <div class = "input-control">
+                        <input id="Finalist1" name="1st Finalist" type="text" disabled>
+                    </div>
+                    <div class = "input-control">
+                        <input id="Finalist2" name="2nd Finalist" type="text" disabled>
+                    </div>
+                </form>
+            </div>
+			`;
 		hide(document.querySelector('.container'));
 		show(document.querySelector('.allbrackets'));
 		// show(document.querySelector('.comingUp'));
-		commingUp.style.display = "block";
+		commingUp.style.display = "flex";
 		const parent = document.querySelector(".allbrackets");
 		parent.append(commingUp);
 		fill("player1B", pValue, pValue.length, bracket);
 		fill("player2B", pValue, pValue.length, bracket);
+		// let curr_matach1 = "Blue is " + bracket[0];
+		// let curr_matach2 = "Red is " + bracket[1];
+
+		// document.querySelector("#announce1").innerHTML = curr_matach1 + " vs " +  curr_matach2;
 		fill("player3B", pValue, pValue.length, bracket);
 		fill("player4B", pValue, pValue.length, bracket);
 		fill("player5B", pValue, pValue.length, bracket);
 		fill("player6B", pValue, pValue.length, bracket);
 		fill("player7B", pValue, pValue.length, bracket);
 		fill("player8B", pValue, pValue.length, bracket);
-		document.getElementById("submit").disabled = false;
+		// document.getElementById("submit").disabled = false;
 	}
 	console.log("brackets=====>");
 	console.log(bracket);
