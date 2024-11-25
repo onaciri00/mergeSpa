@@ -1,6 +1,6 @@
 import { rplayers } from "./registers.js";
 
-var socket;
+var socket = null;
 
 document.addEventListener("DOMContentLoaded", () =>  {
 	
@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 	});
 
 	window.addEventListener("beforeunload", (event) => {
-		if (socket.readyState === WebSocket.OPEN) {
+		if (socket && socket.readyState === WebSocket.OPEN) {
 			console.log("in closed");
 			socket.send(JSON.stringify({ type: "close" }));
 		}
@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 
 	function disconnect()
 	{
-		if (socket.readyState === WebSocket.OPEN) {
+		if (socket && socket.readyState === WebSocket.OPEN) {
 			socket.close();
 		}
 	}
@@ -282,6 +282,11 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		app.style.display = "none";
 		let Tournament = document.querySelector('.allbrackets');
 		Tournament.style.display = "flex";
+		let curr_matach1 = " Blue is " + bracket[0];
+		let curr_matach2 = " Red is " + bracket[1];
+
+		document.querySelector("#announce1").innerHTML = curr_matach1 + " vs ";
+		document.querySelector("#announce2").innerHTML = curr_matach2;
 		// update player 
 	}
 
@@ -528,6 +533,8 @@ document.addEventListener("DOMContentLoaded", () =>  {
 
 	document.addEventListener("keydown", (event) => {
 		if (event.key === "Enter") {
+			if (Array.isArray(bracket) && !bracket.length)
+				bracket = rplayers();
 			if (Array.isArray(bracket) && bracket.length) 
 			{
 				console.log("successfully!");
@@ -608,6 +615,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 			header.style.display = "none";
 			parent.append(app);
 			app.style.display = "flex";
+			
 			startContainer.classList.add("active");
 			startContainer.style.display = "block";
 		}
@@ -625,8 +633,8 @@ document.addEventListener("DOMContentLoaded", () =>  {
 			});
 	
 			nums[0].classList.add('out');
-			const TournamentContainer2 = document.querySelector('.allbrackets');
-			TournamentContainer2.style.display = "none";
+			// const TournamentContainer2 = document.querySelector('.allbrackets');
+			// TournamentContainer2.style.display = "none";
 			// const parent = document.querySelector("#choose-mode");
 			// parent.append(TournamentContainer2);
 			playAgain();
@@ -651,6 +659,9 @@ document.addEventListener("DOMContentLoaded", () =>  {
 	    startContainer.style.display = "block";
 		const TournamentContainer = document.querySelector('.container');
 		TournamentContainer.style.display = "none";
+		document.querySelector(".comingUp").style.display = "none";
+		document.querySelector(".allbrackets").style.display = "none";
+
 	}
 
     document.querySelector("#play-again").addEventListener("click", playAgain);
