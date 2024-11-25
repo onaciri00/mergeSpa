@@ -169,7 +169,54 @@ const data_characters = async () => {
     var chatSocket = null;
     var room_id = 0;
     var check = "";
+    let blockEtat = "block";
+    let socketGlob = null;
 
+    socketGlob = new WebSocket(
+        'wss://' + window.location.hostname + ':8003/wss/chat/'
+    );
+
+    socketGlob.onopen = function(e){
+        console.log('global socket connection open');
+    }
+
+    socketGlob.onmessage = (e) => {
+
+        console.log('hello socket');
+        const data = JSON.parse(e.data);
+        const type = data['type'];
+        const author = data['author'];
+        const recipient = data['recipient'];
+
+        if (type === 'play_invitation' && author !== thisCurrUser.username) {
+
+            const _confirm = confirm(`you have been invited to pong match with ${author}`);
+            console.log("confirmationzz", _confirm);
+
+            socketGlob.send(JSON.stringify ({
+                'type': 'response',
+                'sender' : author,
+                'recipient': "chaguer",
+                'confirmation': _confirm
+            }))
+        }
+
+        if (data.type === 'response_invitation' && author === thisCurrUser.username) {
+
+            const _confirm = data['confirmation'];
+            const recipient = data['recipient'];
+            console.log("confirmation", data);
+
+            if (_confirm){
+                alert(`${recipient} has accept the invitation`);
+            }
+            else{
+                alert(`${recipient} has not accept the invitation`);
+            }
+
+        }
+
+    }
     console.log(characters);
     characters.forEach(character => {
         const userStr = `
@@ -192,10 +239,9 @@ const data_characters = async () => {
             if (existingBlock)
                 existingBlock.remove();
             else {
-                let blockEtat = "Block";
                 const blockContainer = `
                     <button id="play-${character.username}" class="block-child">Play</button>
-                    <button id="dropdown-${character.username}" class="block-child">${blockEtat}</button>
+                    <button id="block-${character.username}" class="block-child">${blockEtat}</button>
                 `;
                 const blockElement = document.createElement("div");
                 blockElement.classList.add("block-style"); // style in css
@@ -209,15 +255,20 @@ const data_characters = async () => {
                 // on click play buuton
                 document.getElementById(`play-${character.username}`).addEventListener('click', async function (e) {
                    
-                    chatSocket.send(JSON.stringify({
-                        'type': 'requestFriend',
-                        'recipient': character.username,
-                        'sender': thisCurrUser.username
-                    }));
+                    
+                    // if (chatSocket !== null) {
+                    //     console.log("---> the first step", character.username, thisCurrUser.username);
+                        socketGlob.send(JSON.stringify({
+                            'type': 'requestFriend',
+                            'recipient': character.username,
+                            'sender': thisCurrUser.username
+                        }));
+                    // }
                 });
 
                 // on click block buuton 
-                document.getElementById(`dropdown-${character.username}`).addEventListener('click', async function(e) {
+                const blockTag = document.getElementById(`block-${character.username}`);
+                blockTag.addEventListener('click', async function(e) {
                     if (check.etat === false) {
                         console.log(`room id in block ${user}`);
                         block_user(character.username, room_id, thisCurrUser.username);
@@ -226,8 +277,8 @@ const data_characters = async () => {
                     }
                     else {
                         unblockUser(room_id);
-                        alert(`you unblock ${character.username}`);
                         blockTag.innerHTML = "Block";
+                        alert(`you unblock ${character.username}`);
                     }
                 });
             }
@@ -283,7 +334,7 @@ const data_characters = async () => {
             }
         }
         chatSocket = new WebSocket(
-            'ws://' + window.location.hostname + ':8003/ws/chat/' + roomId + '/'
+            'wss://' + window.location.hostname + ':8003/wss/chat/' + roomId + '/'
         );
     
         chatSocket.onopen = function(e) {
@@ -295,26 +346,38 @@ const data_characters = async () => {
             
             const data = JSON.parse(e.data);
             const message = data['message'];
+            const type = data['type'];
             const messageBlock = data['message_block'];
             const author = data['author'];
             const isBlocked = data['is_blocked'];
 
-            if (data.type === 'play_invitation'){
+            // if (type === 'play_invitation' && author !== thisCurrUser.username) {
 
-                const confirm = confirm(`you have been invited to pong match by ${author}`);
-                
-                chatSocket.send(JSON.stringify({
-                    'type': 'response',
-                    'sender' : author,
-                    'recipient': username,
-                    'confirmation': confirm
-                }))
-            }
-            if (data.type === 'response_invitation'){
+            //     const _confirm = confirm(`you have been invited to pong match with ${author}`);
+            //     console.log("confirmationzz", _confirm);
 
-                const confirm = data.confirmation
+            //     chatSocket.send(JSON.stringify ({
+            //         'type': 'response',
+            //         'sender' : author,
+            //         'recipient': username,
+            //         'confirmation': _confirm
+            //     }))
+            // }
 
-            }
+            // if (data.type === 'response_invitation' && author === thisCurrUser.username) {
+
+            //     const _confirm = data['confirmation'];
+            //     const recipient = data['recipient'];
+            //     console.log("confirmation", data);
+
+            //     if (_confirm){
+            //         alert(`${recipient} has accept the invitation`);
+            //     }
+            //     else{
+            //         alert(`${recipient} has not accept the invitation`);
+            //     }
+
+            // }
     
                 const msgTag = document.createElement('div');
                 msgTag.textContent = message;

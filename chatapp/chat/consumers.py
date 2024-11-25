@@ -9,6 +9,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f"chat_{self.room_name}"
 
+
         await self.accept()
         room = await sync_to_async(Room.objects.get)(id=self.room_name)
         block = await sync_to_async(Block.objects.filter(room=room).exists)()
@@ -48,36 +49,40 @@ class ChatConsumer(AsyncWebsocketConsumer):
         content = text_data_json.get('message', '')
         room_id = text_data_json.get('roomId', '')
 
-        room = await sync_to_async(Room.objects.get)(id=room_id)
-        message = await sync_to_async(Message.objects.create)(
-            author=sender,
-            content=content,
-            room=room
-        )
+        if room_id:
+            room = await sync_to_async(Room.objects.get)(id=room_id)
+            message = await sync_to_async(Message.objects.create)(
+                author=sender,
+                content=content,
+                room=room
+            )
 
-        if message['type'] == 'requestFriend':
-            recipient = message['recipient']
-            sender = message['sender']
-            await self.channel_layer.group_send(
-            f"user_{recipient}",
-            {
-                "type": "play_invitation",
-                "author": sender,
-            }
-        )
+        # if text_data_json.get('type') == 'requestFriend':
+        #     recipient = text_data_json['recipient']
+        #     sender = text_data_json['sender']
+        #     print(f"-----> {recipient} __ {sender}", flush=True)
+        #     await self.channel_layer.group_send(
+        #     self.room_group_name,
+        #     {
+        #         'type': 'play_invitation',
+        #         'author': sender
+        #     }
+        # )
 
-        if message['type'] == 'response':
-            recipient = message['recipient']
-            sender = message['sender']
-            confirmation = message['confirmation']
-            await self.channel_layer.group_send(
-            f"user_{sender},
-            {
-                "type": "response_invitation",
-                "author": sender,
-                "confirmation": confirmation
-            }
-        )
+        # if text_data_json.get('type') == 'response':
+        #     recipient = text_data_json['recipient']
+        #     sender = text_data_json['sender']
+        #     confirmation = text_data_json.get('confirmation')
+        #     print(f">>>> {recipient} __ {sender} __ {confirmation}",flush=True)
+        #     await self.channel_layer.group_send(
+        #     self.room_group_name,
+        #     {
+        #         'type': 'response_invitation',
+        #         "author": sender,
+        #         "recipient": recipient,
+        #         "confirmation": confirmation
+        #     }
+        # )
 
         await self.channel_layer.group_send(
             self.room_group_name,
@@ -88,6 +93,27 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }
         )
 
+    # async def play_invitation(self, event):
+    #     author = event["author"]
+
+    #     await self.send(text_data=json.dumps ({
+    #             'type': 'play_invitation',
+    #             'author': author
+    #         }))
+
+    # async def response_invitation(self, event):
+    #     author = event["author"]
+    #     recipient = event["recipient"]
+    #     confirmation = event["confirmation"]
+
+        # await self.send(text_data=json.dumps ({
+        #         'type': 'response_invitation',
+        #         'recipient': recipient,
+        #         'author': author,
+        #         'confirmation': confirmation
+        #     }))
+
+
     async def chat_message(self, event):
         author = event["author"]
         message = event["message"]
@@ -96,3 +122,78 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'author': author,
             'message': message,
         }))
+
+class messageConsumers(AsyncWebsocketConsumer):
+    async def connect(self):
+
+        self.room_group_name = "user_boo"
+        await self.channel_layer.group_add(
+        self.room_group_name,
+        self.channel_name
+        )
+        await self.accept()
+        print("Connection accepted", flush=True)
+
+
+
+    async def disconnect(self, close_code):
+
+        await self.channel_layer.group_discard (
+            self.room_group_name,
+            self.channel_name
+        )
+        print("Connection closed", flush=True)
+
+    async def receive(self, text_data):
+        text_data_json = json.loads(text_data)
+        print('>>>>>>>> type', text_data_json.get('type'))
+
+        if text_data_json.get('type') == 'requestFriend':
+            recipient = text_data_json['recipient']
+            sender = text_data_json['sender']
+            print(f"----->receive {recipient} __ {sender}", flush=True)
+            await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'play_invitation',
+                'author': sender
+            }
+        )
+
+        if text_data_json.get('type') == 'response':
+            recipient = text_data_json['recipient']
+            sender = text_data_json['sender']
+            confirmation = text_data_json.get('confirmation')
+            print(f">>>> recive{recipient} __ {sender} __ {confirmation}",flush=True)
+            await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'response_invitation',
+                "author": sender,
+                "recipient": recipient,
+                "confirmation": confirmation
+            }
+        )
+
+    async def play_invitation(self, event):
+        author = event["author"]
+
+        await self.send(text_data=json.dumps ({
+                'type': 'play_invitation',
+                'author': author
+            }))
+
+    async def response_invitation(self, event):
+        author = event["author"]
+        recipient = event["recipient"]
+        confirmation = event["confirmation"]
+
+        await self.send(text_data=json.dumps ({
+                'type': 'response_invitation',
+                'recipient': recipient,
+                'author': author,
+                'confirmation': confirmation
+            }))
+    
+
+
