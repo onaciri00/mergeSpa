@@ -8,6 +8,7 @@ import { rankPart } from "./rank.js";
 import { friendsPart, friendsFunction } from "./friends.js";
 import { get_csrf_token } from "./register.js";
 import { newDataFunc } from "../script.js";
+import { socketFunction } from "./socket.js";
 
 export const chatFunction = () => {
     profileId.style.display = "none";
@@ -65,13 +66,6 @@ async function getRoomName(recipient, sender) {
     }
 }
 
-function createRoomContainer(roomName) {
-    const msgContainer = document.getElementById('msgs');
-    const roomTag = document.createElement('div');
-    roomTag.id = `chat-log-${roomName}`;
-    roomTag.style.display = 'none';
-    msgContainer.appendChild(roomTag);
-}
 
 function showRoom(recipient, sender) {
     document.querySelectorAll('.my-msg').forEach(log => {
@@ -81,8 +75,6 @@ function showRoom(recipient, sender) {
         log.style.display = 'none';
     });
     checkBlockStatus(recipient, sender);
-    // const selectedUser = document.getElementById('msgs');
-    // selectedUser.style.display = 'flex';
 }
 
 
@@ -166,57 +158,51 @@ const data_characters = async () => {
     const characters = await friendsFunction();
     const thisCurrUser = await newDataFunc();
     const chats1 = document.querySelector("#chats");
+    const thisSocket = await socketFunction();
     var chatSocket = null;
     var room_id = 0;
     var check = "";
     let blockEtat = "block";
-    let socketGlob = null;
+    // let socketGlob = null;
 
-    socketGlob = new WebSocket(
-        'wss://' + window.location.hostname + ':8003/wss/chat/'
-    );
 
-    socketGlob.onopen = function(e){
-        console.log('global socket connection open');
-    }
+    // socketGlob.onmessage = (e) => {
 
-    socketGlob.onmessage = (e) => {
+    //     console.log('hello socket');
+    //     const data = JSON.parse(e.data);
+    //     const type = data['type'];
+    //     const author = data['author'];
+    //     const recipient = data['recipient'];
 
-        console.log('hello socket');
-        const data = JSON.parse(e.data);
-        const type = data['type'];
-        const author = data['author'];
-        const recipient = data['recipient'];
+    //     if (type === 'play_invitation' && author !== thisCurrUser.username) {
 
-        if (type === 'play_invitation' && author !== thisCurrUser.username) {
+    //         const _confirm = confirm(`you have been invited to pong match with ${author}`);
+    //         console.log("confirmationzz", _confirm);
 
-            const _confirm = confirm(`you have been invited to pong match with ${author}`);
-            console.log("confirmationzz", _confirm);
+    //         socketGlob.send(JSON.stringify ({
+    //             'type': 'response',
+    //             'sender' : author,
+    //             'recipient': "chaguer",
+    //             'confirmation': _confirm
+    //         }))
+    //     }
 
-            socketGlob.send(JSON.stringify ({
-                'type': 'response',
-                'sender' : author,
-                'recipient': "chaguer",
-                'confirmation': _confirm
-            }))
-        }
+    //     if (data.type === 'response_invitation' && author === thisCurrUser.username) {
 
-        if (data.type === 'response_invitation' && author === thisCurrUser.username) {
+    //         const _confirm = data['confirmation'];
+    //         const recipient = data['recipient'];
+    //         console.log("confirmation", data);
 
-            const _confirm = data['confirmation'];
-            const recipient = data['recipient'];
-            console.log("confirmation", data);
+    //         if (_confirm){
+    //             alert(`${recipient} has accept the invitation`);
+    //         }
+    //         else{
+    //             alert(`${recipient} has not accept the invitation`);
+    //         }
 
-            if (_confirm){
-                alert(`${recipient} has accept the invitation`);
-            }
-            else{
-                alert(`${recipient} has not accept the invitation`);
-            }
+    //     }
 
-        }
-
-    }
+    // }
     console.log(characters);
     characters.forEach(character => {
         const userStr = `
@@ -255,15 +241,12 @@ const data_characters = async () => {
                 // on click play buuton
                 document.getElementById(`play-${character.username}`).addEventListener('click', async function (e) {
                    
-                    
-                    // if (chatSocket !== null) {
-                    //     console.log("---> the first step", character.username, thisCurrUser.username);
-                        socketGlob.send(JSON.stringify({
-                            'type': 'requestFriend',
-                            'recipient': character.username,
-                            'sender': thisCurrUser.username
-                        }));
-                    // }
+                    console.log("---> from chat send cridentials ", character.id, thisCurrUser.id);
+                    thisSocket.send(JSON.stringify({
+                        'type': 'requestFriend',
+                        'recipient': character.id,
+                        'sender': thisCurrUser.id
+                    }));
                 });
 
                 // on click block buuton 
@@ -334,7 +317,7 @@ const data_characters = async () => {
             }
         }
         chatSocket = new WebSocket(
-            'wss://' + window.location.hostname + ':8003/wss/chat/' + roomId + '/'
+            'ws://' + window.location.hostname + ':8003/ws/chat/' + roomId + '/'
         );
     
         chatSocket.onopen = function(e) {

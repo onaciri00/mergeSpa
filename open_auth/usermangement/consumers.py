@@ -8,10 +8,10 @@ class FriendRequestConsumer(WebsocketConsumer):
 
     def connect(self):
         self.user = self.scope["user"]
-        print(f"Connected user: {self.user}")
         if self.user.is_authenticated and isinstance(self.user, User_info):
-            self.group_name = f'user_{self.user.id}'
-            async_to_sync(self.channel_layer.group_add)(self.group_name, self.channel_name)
+            self.room_group_name = f'user_{self.user.id}'
+            print(f">>>>>> Connected user: {self.room_group_name}")
+            async_to_sync(self.channel_layer.group_add)(self.room_group_name ,self.channel_name)
             self.user.online_status = True
             self.user.save()
             self.accept()
@@ -28,7 +28,53 @@ class FriendRequestConsumer(WebsocketConsumer):
         self.user.save()
         self.update_user_status(False)
         self.notify_to_curr_user_form_friends()
-        async_to_sync(self.channel_layer.group_discard)(self.group_name, self.channel_name)
+        async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
+
+    def receive(self, text_data):
+        data = json.loads(text_data)
+
+        print('>>>>>>>> type', data.get('type'))
+
+        if data.get('type') == 'requestFriend':
+
+            recipient = data['recipient']
+            sender = data['sender']
+            group_name = f'user_{recipient}'
+
+            print(f"----->>>>>>>  receive {recipient} __ {sender}__ {group_name}")
+            friends = self.user.friends.all()
+            for friend in friends:
+                if friend.id == recipient:
+                    print(f'-------- friend : {friend.id}')
+                    async_to_sync(self.channel_layer.group_send) (
+                    f'user_{friend.id}',
+                    {
+                        'type': 'play_invitation',
+                        'author': "boo",
+                        'sender_id': sender,
+                        'recipient': "chaguer"
+                    }
+        )
+
+        if data.get('type') == 'response':
+
+            print('-----------------response section')
+            recipient = data['recipient']
+            sender = data['sender']
+            senderId = data['sender_id']
+            confirmation = data.get('confirmation')
+            print(f">>>>>>>>>>>>> recive {recipient} __ {confirmation},,, {senderId}")
+
+            async_to_sync(self.channel_layer.group_send) (
+            f'user_{senderId}',
+            {
+                'type': 'response_invitation',
+                "recipient": "chaguer",
+                "confirmation": confirmation
+            },
+        )
+
+    
 
     def update_user_status(self, user_status):
         # channel_layer = get_channel_layer()
@@ -75,6 +121,30 @@ class FriendRequestConsumer(WebsocketConsumer):
             }))
 
     
+    def play_invitation(self, event):
+        author = event["author"]
+        recipient = event["recipient"]
+        sender_id = event['sender_id']
+
+        self.send(text_data=json.dumps ({
+                'type': 'play_invitation',
+                'author': "boo",
+                'senderId': sender_id,
+                'recipient': "chaguer"
+        }))
+
+    def response_invitation(self, event):
+        # author = event["author"]
+        recipient = event["recipient"]
+        confirmation = event["confirmation"]
+
+        self.send(text_data=json.dumps ({
+                'type': 'response_invitation',
+                'recipient': "chaguer",
+                # 'author': author,
+                'confirmation': confirmation
+        }))
+
     def notify_user_status(self, event):
         # Send a message to the WebSocket client
         print ('0 : user notify friends \n')

@@ -49,9 +49,43 @@ export const socketFunction = async () => {
             socket.onerror = function(error) {
                 console.log(' ---| WEBSOCKET IS NOT CONNECTE |----------', error);
                 console.error('WebSocket error:', error);
-        };
-        socket.onmessage = function(event) {
-            const data = JSON.parse(event.data);
+            };
+            socket.onmessage = function(event) {
+
+                const data = JSON.parse(event.data);
+                const recipient = data.recipient;
+                const sender = data['author'];
+                const sender_id = data['senderId'];
+                
+                console.log('-----------> sender id', sender_id);
+                
+            if (data.type === 'play_invitation') {
+                
+                console.log("---------->> type", recipient);
+                const _confirm = confirm(`you have been invited to pong match with ${sender}`);
+                console.log("-------------------- confirmationzz", _confirm);
+                
+                socket.send(JSON.stringify ({
+                    'type': 'response',
+                    'sender' : sender,
+                    'sender_id': sender_id,
+                    'recipient': recipient,
+                    'confirmation': _confirm
+                }))
+            }
+            if (data.type === 'response_invitation') {
+
+                const _confirm = data['confirmation'];
+                const recipient = data['recipient'];
+                console.log("----- confirmation", data.data);
+    
+                if (_confirm){
+                    alert(`${recipient} has accept the invitation`);
+                }
+                else{
+                    alert(`${recipient} has not accept the invitation`);
+                }
+            }
             if (data.status === 'success') {
                 if (data.option === 'receive_frd_req'){
                     const bellNotif = document.createElement("div");
@@ -121,4 +155,5 @@ export const socketFunction = async () => {
             flag = 0;
         };
     }
+    return socket;
 }
