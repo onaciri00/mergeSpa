@@ -121,7 +121,7 @@ const validateInput = () =>{
 	{
 		for(let j = i + 1; j < pValue.length; j++)
 		{
-			if (pValue[i] == pValue[j])
+			if (pValue[i] == pValue[j] || pValue[j].length > 8)
 			{
 				sameName = true;
 				console.log("there");
@@ -136,6 +136,9 @@ const validateInput = () =>{
 		console.log("here");
 		// form.addEventListener('submit', handleSubmit);
 		// alert("same name");
+		const sameName = document.querySelector("#same-name");
+		sameName.style.display = "flex";
+		setInterval(()=> sameName.style.display = "none", 3000);
 	}
 	else
 	{
