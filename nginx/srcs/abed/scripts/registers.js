@@ -36,6 +36,34 @@ const handleSubmit = (e) => {
 	validateInput();
 }
 
+// let pValue = [];
+// let pvalue = [];
+
+// form.querySelectorAll('input').forEach(inp => {
+// 	inp.addEventListener('change', (e, i) => {
+// 		console.log('================new');
+		
+// 		if (e.target.value.trim() === '')
+// 			document.querySelector('#submittt button').disabled = true;
+// 		else {
+// 			pValue[0] = player1.value.trim();
+// 			pValue[1] = player2.value.trim();
+// 			pValue[2] = player3.value.trim();
+// 			pValue[3] = player4.value.trim();
+// 			pValue[4] = player5.value.trim();
+// 			pValue[5] = player6.value.trim();
+// 			pValue[6] = player7.value.trim();
+// 			pValue[7] = player8.value.trim();
+// 			console.log('Before ====', [...pvalue]);
+// 			const newArr = removeDuplicates(pvalue)?.filter(el => el != '')
+// 			console.log(newArr, newArr.length);
+			
+// 			document.querySelector('#submittt button').disabled = newArr.length == 8;
+			
+// 		}
+// 	})
+// });
+
 const hide = (element) => {
 	element.style.display = 'none';
 }
@@ -50,6 +78,10 @@ const show = (element) => {
 const randomNumber = (i) =>{
 	return(Math.floor(Math.random() * i));
 }
+
+// function removeDuplicates(arr) {
+//     return [...new Set(arr)];
+// }
 
 const fill = (element, pvalue, i, bracket) => {
 	let deleter = randomNumber(i);
@@ -81,6 +113,8 @@ const validateInput = () =>{
 	pValue[5] = player6.value.trim();
 	pValue[6] = player7.value.trim();
 	pValue[7] = player8.value.trim();
+	console.log('=====', pValue);
+	
 	let i = 8;
 	sameName = false;
 	for (let i = 0;i < pValue.length;i++)
@@ -101,31 +135,35 @@ const validateInput = () =>{
 	{
 		console.log("here");
 		// form.addEventListener('submit', handleSubmit);
-		alert("same name");
+		// alert("same name");
 	}
 	else
 	{
-		commingUp.style.display = "flex";
-		const parent = document.querySelector("#choose-mode");
-		parent.append(commingUp);
-		console.log("IN prog");
-		hide(document.querySelector('.container'));
-		show(document.querySelector('.allbrackets'));
-		// show(document.querySelector('.comingUp'));
-		fill("player1B", pValue, pValue.length, bracket);
-		fill("player2B", pValue, pValue.length, bracket);
-		let curr_matach1 = " Blue is " + bracket[0];
-		let curr_matach2 = " Red is " + bracket[1];
-
-		document.querySelector("#announce1").innerHTML = curr_matach1 + " vs ";
-		document.querySelector("#announce2").innerHTML = curr_matach2;
-		fill("player3B", pValue, pValue.length, bracket);
-		fill("player4B", pValue, pValue.length, bracket);
-		fill("player5B", pValue, pValue.length, bracket);
-		fill("player6B", pValue, pValue.length, bracket);
-		fill("player7B", pValue, pValue.length, bracket);
-		fill("player8B", pValue, pValue.length, bracket);
-		// document.getElementById("submit").disabled = false;
+		// document.querySelector("#submittt").disabled = false;
+		// const Submiting = (e) => {
+			
+			commingUp.style.display = "flex";
+			const parent = document.querySelector("#choose-mode");
+			parent.append(commingUp);
+			console.log("IN prog");
+			hide(document.querySelector('.container'));
+			show(document.querySelector('.allbrackets'));
+			// show(document.querySelector('.comingUp'));
+			fill("player1B", pValue, pValue.length, bracket);
+			fill("player2B", pValue, pValue.length, bracket);
+			let curr_matach1 = " Blue is " + bracket[0];
+			let curr_matach2 = " Red is " + bracket[1];
+	
+			document.querySelector("#announce1").innerHTML = curr_matach1 + " vs ";
+			document.querySelector("#announce2").innerHTML = curr_matach2;
+			fill("player3B", pValue, pValue.length, bracket);
+			fill("player4B", pValue, pValue.length, bracket);
+			fill("player5B", pValue, pValue.length, bracket);
+			fill("player6B", pValue, pValue.length, bracket);
+			fill("player7B", pValue, pValue.length, bracket);
+			fill("player8B", pValue, pValue.length, bracket);
+		// }
+		// form.addEventListener('click', Submiting);
 	}
 	console.log("brackets=====>");
 	console.log(bracket);
