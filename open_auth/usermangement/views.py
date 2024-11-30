@@ -15,6 +15,8 @@ from .serializer         import UserInfoSerializer
 from django.contrib.auth import update_session_auth_hash
 from channels.layers     import get_channel_layer
 from asgiref.sync        import async_to_sync
+from django.core.cache   import cache
+
 
 # Create your views here.
 @api_view(['GET'])
@@ -23,7 +25,13 @@ def     get_user(request):
     if request.method == 'GET':
         user = request.user
         if user.is_authenticated:
+            cache_key = f"user_profile_{user.id}"
+            cached_data = cache.get(cache_key)
+            if cached_data:
+                print(f"Returning cached data for user {user.id}")
+                return JsonResponse({'status': 'success', 'data': cached_data}, status=200)
             serialize = ProfileSerializer(instance=user)
+            cache.set(cache_key, serialize.data)  # Cache fresh data
             print("\033[1;38m data ===> ", serialize.data)
             return JsonResponse ({"status" : "success",
              "data" : serialize.data})

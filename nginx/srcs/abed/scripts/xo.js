@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
     const showResult = document.createElement("div");
     const Suser = document.createElement("div");
     let is_gameOver = false;
-    let socket;
+    let socket = null;
     let crtf;
     let matchdata = 
     {
@@ -18,6 +18,8 @@ document.addEventListener("DOMContentLoaded", () =>  {
         result:0,
         x_resuSuserlt:"",
         score:0,
+        userName:"",
+        openName:"",
     };
     // const leftGameContainer = document.createElement("div");
 
@@ -55,7 +57,8 @@ document.addEventListener("DOMContentLoaded", () =>  {
             <div class="square align" data-index="8"></div>
         </div>
         <div id="alert_move">Your are </div>
-        <button id="play-again">Play Again</button> <!-- Moved here -->
+        <div id="enemyXo"></div>
+        <button id="pplay-again">Play Again</button> <!-- Moved here -->
     `;
     waitContainer.innerHTML=`
         <div class="loader-container">
@@ -98,6 +101,9 @@ function fetchUser(){
             matchdata.id = data.data.id;
             matchdata.user = data.data.id;
             matchdata.level = data.data.level;
+            matchdata.userName = data.data.username;
+
+            console.log("full name is ", data.data.username);
             console.log("LEVEL is ", matchdata.level, " User is ", matchdata.user, matchdata.id)
         }
     })
@@ -192,9 +198,9 @@ async function createRoom() {
             body: JSON.stringify({ code: generateRoomCode() })
         });
         
-        const data = await response.json();
+        const data =  await response.json();
         roomCode = data.code;
-        console.log("Created new room with code:", roomCode);
+        console.log("Created new room with code:", roomCode, "and data code is ", data);
         connectWebSocket();
         
         return data;
@@ -203,7 +209,7 @@ async function createRoom() {
     }
 }
 function disconnect() {
-    if (socket.readyState === WebSocket.OPEN) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
         console.log("in closed");
         socket.close();
     }
@@ -211,7 +217,8 @@ function disconnect() {
 
 
 function generateRoomCode() {
-    return Math.random().toString(36).substring(2, 8).toUpperCase();
+    return  Math.random().toString(36).substring(2, 8).toUpperCase();
+    
 }
 document.getElementById("startGame").addEventListener("click", function() {
     console.log("First Wait");
@@ -234,7 +241,10 @@ function startGame() {
         fetchcrtf();
         socket.send(JSON.stringify({
             "event": "START",
-            "message": matchdata.id
+            "message": {
+                "id": matchdata.id,
+                "name": matchdata.userName
+            }
         }));
         startContainer.classList.remove("active");
         gameContainer.classList.add("active");
@@ -279,15 +289,13 @@ function startGame() {
                     } else {
                         currentTurn = 'O';
                     }
-                    document.getElementById("alert_move").textContent = message;
-                    document.getElementById("alert_move").textContent = `Your are ${currentTurn}`;
-
                     break;
                 case "END":
                     console.log('game over ', message, 'with ', eventType)
                     console.log("this char ", charChoice)
                     if (message.includes(charChoice)) {
                         document.querySelector("#result").innerHTML = charChoice + " win";
+                        document.querySelector("#enemyXo").style.display = "none";
                         if (message.includes(matchdata.chose))
                         {
                                 matchdata.result = 1;
@@ -392,11 +400,28 @@ function startGame() {
             if (matchdata.id == message.user1)
             {
                 matchdata.opponent = message.user2;
+                matchdata.openName = message.userName2;
             }
             else
             {
                 matchdata.opponent = message.user1;
+                matchdata.openName = message.userName1;
+
             }
+            if (matchdata.openName.length >= 10)
+            {
+                matchdata.openName = matchdata.openName.slice(0, 7) + "..."
+            }
+            if (charChoice == 'X'){
+                document.getElementById("enemyXo").textContent = `O is ${matchdata.openName }`;
+                document.getElementById("enemyXo").style.backgroundColor = "#08D9D6"
+            }
+            else{
+
+                document.getElementById("enemyXo").textContent = `X is ${matchdata.openName }`;
+                document.getElementById("enemyXo").style.backgroundColor = "#FF2E63"
+            }
+            console.log("message.userName", message)
             console.log("Update Match ", matchdata.id, " ope ", matchdata.opponent);
         }
         function hadnleSuser()
@@ -409,7 +434,6 @@ function startGame() {
         function initializeGame() {
             console.log("intitialze fuction");
             document.getElementById("alert_move").textContent = `Your are ${charChoice}`;
-
             startGame();
         }
 
@@ -457,7 +481,7 @@ function startGame() {
             console.log('t his restGame');
             showResult.classList.add("active");
             showResult.style.display = "block";
-            document.querySelector("#play-again").style.display = "block";
+            document.querySelector("#pplay-again").style.display = "block";
             let WinCondation = [
                 [0, 1, 2],
                 [3, 4, 5],
@@ -491,6 +515,7 @@ function startGame() {
         }
     }
     const playAgain = ()=> {
+        disconnect();
         is_gameOver = false;
         currentTurn = 'X'; 
         console.log('playAgain');
@@ -499,14 +524,14 @@ function startGame() {
         const same = document.querySelector(".same-User");
         same.style.display = "none";
         waitContainer.classList.remove("active")
-        startContainer.classList.add("active");
         gameContainer.classList.remove("active");
+        startContainer.classList.add("active");
         startContainer.style.display = "block";
         showResult.classList.remove("active");
         document.getElementById("alert_move").textContent = `Your are ${charChoice}`;
         document.querySelector(".bg").style.left = "0";
         document.querySelector("#result").innerHTML = "";
-        document.querySelector("#play-again").style.display = "none";
+        document.querySelector("#pplay-again").style.display = "none";
         document.querySelector(".bg").style.backgroundColor = "#FF2E63";
         // gameContainer.classList.remove('player-o-turn'); 
         document.querySelectorAll('.square').forEach((element) => {
@@ -516,7 +541,7 @@ function startGame() {
             element.style.color = "white";
         });
     }
-    document.querySelector("#play-again").addEventListener("click", playAgain);
+    document.querySelector("#pplay-again").addEventListener("click", playAgain);
     // const app = document.querySelector("#app");
     const freeze = document.querySelector("#freeze");
 
