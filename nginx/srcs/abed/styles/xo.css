@@ -244,3 +244,20 @@ body {
     right: 10px;
     background-color: white;
 }
+
+#alert_move
+{
+    display: flex;
+    padding: 20px;
+    font-size: 30px;
+}
+
+
+#enemyXo {
+    border: none;
+    display: block;
+    font-size: 30px;
+    margin-left: 350px;
+    width: auto;
+
+}

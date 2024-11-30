@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 	let paddle2 = {
         x: 10,        
         y: 110,       
-        w: 5,        
+        w: 5,
         h: 80,        
     };
 	/*******************************************************************************************************/
@@ -87,13 +87,10 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		<div class="loading-text1">Loading<span class="dots1"></span></div>
 	</div>
 	`;
-
-	
 	app.appendChild(startContainer);
 	app.appendChild(waitContainer);
 	app.append(game_over);
 	document.getElementById("startGame1").addEventListener("click", function() {
-		
 		wait_page();
 		if (gameType == 'remote')
 			fetchRoom();
@@ -358,8 +355,15 @@ document.addEventListener("DOMContentLoaded", () =>  {
 			{
 				gameContainer.style.display = "none";
 				game_over.style.display = "block";
-				if (pad_num == 0)
+				if (pad_num == 0){
 					game_over.style.backgroundColor = "#0095DD";
+					document.getElementById("result1").innerHTML = "blue  Won";
+				}
+				else
+				{
+					document.getElementById("result1").innerHTML = "Red  Won";
+					game_over.style.backgroundColor =  "#ff0000";
+				}
 			}
 			else
 			{
@@ -368,6 +372,8 @@ document.addEventListener("DOMContentLoaded", () =>  {
 				document.getElementById("result1").innerHTML = "You lose";
 				if (pad_num == 0)
 					game_over.style.backgroundColor = "#0095DD";
+				else
+					game_over.style.backgroundColor =  "#ff0000";
 			}
 			document.querySelector("#play-again").style.display = "block";
 		}
@@ -385,6 +391,8 @@ document.addEventListener("DOMContentLoaded", () =>  {
 					gameContainer.style.display = "none";
 					game_over.style.display = "block";
 					document.getElementById("result1").innerHTML = "Red  Won";
+					game_over.style.backgroundColor =  "#ff0000";
+
 
 				}
 				document.querySelector("#play-again").style.display = "block";
@@ -659,7 +667,8 @@ document.addEventListener("DOMContentLoaded", () =>  {
 	    startContainer.style.display = "block";
 		const TournamentContainer = document.querySelector('.container');
 		TournamentContainer.style.display = "none";
-		document.querySelector(".comingUp").style.display = "none";
+		if (gameType == "tourn")
+			document.querySelector(".comingUp").style.display = "none";
 		document.querySelector(".allbrackets").style.display = "none";
 
 	}
