@@ -14,7 +14,8 @@ hh = 80
 ww = 5
 paddle_speed = 1
 score_to_win = 5
-pad_num = 0
+matches = {}
+
 class ball:
     def __init__(self, x, y):
         self.x = x
@@ -70,7 +71,7 @@ class paddle:
         }
 
 class   Match:
-    def __init__(self, N):
+    def __init__(self):
         self.starting = False
         self.b = ball(width / 2, height / 2)
         self.p1 = paddle(0, (height - hh) / 2, 0, height)
@@ -123,11 +124,9 @@ class   Match:
 
 class PingPongConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        global pad_num
         self.room_code = self.scope['url_route']['kwargs']['room_code']
         self.room_group_name = f'pingpong_{self.room_code}'
         self.gameType = "remote"
-        
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
@@ -138,17 +137,20 @@ class PingPongConsumer(AsyncWebsocketConsumer):
                 "user2": None,
                 "user1Name":None,
                 "user2Name":None,
+                "pad_num":None,
                 "channels": []
             }
         if len(connected_players[self.room_group_name]['channels']) >= 2:
             await self.close()
             return
-        pad_num = len(connected_players[self.room_group_name]['channels'])
+        if self.room_group_name not in matches:
+            matches[self.room_group_name] = Match() 
+        connected_players[self.room_group_name]['pad_num'] = len(connected_players[self.room_group_name]['channels'])
         connected_players[self.room_group_name]["channels"].append(self.channel_name)
         await self.accept()
         await self.send(text_data=json.dumps({
             'type': 'ASSIGN_PAD_NUM',
-            'pad_num': pad_num
+            'pad_num': connected_players[self.room_group_name]['pad_num']
         }))
         if len(connected_players[self.room_group_name]['channels']) == 2:
             await self.channel_layer.group_send(
@@ -169,41 +171,27 @@ class PingPongConsumer(AsyncWebsocketConsumer):
                 }   
         )
     async def disconnect(self, close_code):
-        global pad_num
-        #if self.room_group_name in connected_players:
-         #   player_left = None
-          #  for player in connected_players[self.room_group_name]:
-           #     if player['channel'] == self.channel_name:
-            #        player_left = player['pad_num']
-             #       connected_players[self.room_group_name].remove(player)
-              #      break
-        print("in disconect with ", len(connected_players[self.room_group_name]),flush=True)
-
+        player_left = None
         if self.room_group_name in connected_players:
-            player_left = None
-            for player in connected_players[self.room_group_name]['channels']:
-                if player['channel'] == self.channel_name:
-                    player_left = player['pad_num']  # Retrieve the pad_num of the player who left
-                    connected_players[self.room_group_name].remove(player)  # Remove the player from the list
-                    break
-        # I only one player remains in the room, notify them with the remaining player's pad_num
-        if len(connected_players[self.room_group_name]['channels']) == 1:
-            remaining_player_pad_num = connected_players[self.room_group_name][0]['pad_num']
+            if self.channel_name in connected_players[self.room_group_name]["channels"]:
+                player_left = connected_players[self.room_group_name]['pad_num']
+                connected_players[self.room_group_name]["channels"].remove(self.channel_name)
+        if len(connected_players[self.room_group_name]["channels"]) == 1:
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
                     'type': 'send_message',
                     'message': f'{player_left}',
-                    'event': 'LEFT'
+                    'event': 'OVER'
                 }
             )
             await self.close()
-        # If no players remain, delete the room and clean up
-        if len(connected_players[self.room_group_name]['channels']) == 0:
-            await self.delete_room()
+        if self.room_group_name in connected_players and not connected_players[self.room_group_name]["channels"]:
+            del matches[self.room_group_name]
+        if len(connected_players[self.room_group_name]["channels"]) == 0:
+            await self.delete_room() 
             del connected_players[self.room_group_name]
-    # Remov the player from the channel group
-            await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
     async def delete_room(self):
         await sync_to_async(Proom.objects.filter(code=self.room_code).delete)()
 
@@ -211,6 +199,9 @@ class PingPongConsumer(AsyncWebsocketConsumer):
         
     async def receive(self, text_data):
         data = json.loads(text_data)
+        match = matches.get(self.room_group_name)
+        if not match:
+            return 
         if data.get('type') == 'START':
             if not connected_players[self.room_group_name]["user1"]:
                 connected_players[self.room_group_name]["user1"] = data.get("message")["id"]
@@ -275,9 +266,9 @@ class PingPongConsumer(AsyncWebsocketConsumer):
             'event': event['event']
         }))
     async def start_game_loop(self):
-        global match
-        match = Match(0)  
-        print("gsme type is ", self.gameType, flush=True)
+        match = matches.get(self.room_group_name)
+        if not match:
+            return 
         while True:
             if match.p1.score == 3:
                 await self.channel_layer.group_send(

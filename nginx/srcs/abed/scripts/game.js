@@ -485,7 +485,6 @@ async function fetchRoom() {
 				gameContainer.style.display = "none";
 				game_over.style.display = "block";
 				document.getElementById("result1").innerHTML = "You  Win";
-				alert("Winner")
 				if (pad_num == 0){
 					game_over.style.backgroundColor = "#0095DD";
 				}
@@ -501,7 +500,6 @@ async function fetchRoom() {
 			{
 				gameContainer.style.display = "none";
 				game_over.style.display = "block";
-				alert("loser")
 				document.getElementById("result1").innerHTML = "You lose";
 				if (pad_num == 0)
 					game_over.style.backgroundColor = "#0095DD";
@@ -590,7 +588,7 @@ async function fetchRoom() {
 
 	}
 
-	document.addEventListener("keydown", (event) => {
+	document.addEventListener("keydown",  (event) => {
 		if (gameType == 'remote'){
 			if (gameStart && (event.key === "ArrowUp")) {
 				socket.send(JSON.stringify({ 
@@ -601,7 +599,7 @@ async function fetchRoom() {
 			} 
 			else if (gameStart && (event.key === "ArrowDown"))
 			{
-				socket.send(JSON.stringify({ 
+				 socket.send(JSON.stringify({ 
 					type: "move", 
 					move: "Down", 
 					pad_num: pad_num 
