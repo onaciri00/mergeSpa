@@ -74,6 +74,7 @@ def         get_curr_user(request):
     print ('--------- ', user, ' -----------\n')
     print ('--------------------------------\n')
     serialize_user = UserInfoSerializer(user)
+    print("score is ", user.score, flush=True)
     return JsonResponse({'status': '200', 'data' : serialize_user.data})
 
 

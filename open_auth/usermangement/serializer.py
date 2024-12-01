@@ -44,7 +44,8 @@ class   UserInfoSerializer(serializers.ModelSerializer):
             'lastname',
             'email',
             'imageProfile',
-            'level'
+            'level',
+            'score'
         ]
 
 class       RequestFriendSerializer(serializers.ModelSerializer):
