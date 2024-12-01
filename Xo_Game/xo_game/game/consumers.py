@@ -17,14 +17,13 @@ class TicTacToeConsumer(AsyncWebsocketConsumer):
                 'board': ['', '', '', '', '', '', '', '', ''],  
             }
         if self.room_group_name not in connected_players:
-            if self.room_group_name not in connected_players:
-              connected_players[self.room_group_name] = {
-                  "user1": None,
-                  "user2": None,
-                  "user1Name":None,
-                  "user2Name":None,
-                  "channels": []
-              }
+            connected_players[self.room_group_name] = {
+                "user1": None,
+                "user2": None,
+                "user1Name":None,
+                "user2Name":None,
+                "channels": []
+            }
             turn_tracker[self.room_group_name] = 'X'
         if len(connected_players[self.room_group_name]['channels']) >= 2:
             await self.close()

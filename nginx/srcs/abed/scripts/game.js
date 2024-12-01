@@ -31,9 +31,24 @@ document.addEventListener("DOMContentLoaded", () =>  {
         w: 5,
         h: 80,        
     };
+	let matchdata = 
+    {
+        id:0,
+        level:0,
+        user:0,
+        opponent:0,
+        chose:"",
+        result:0,
+        x_resuSuserlt:"",
+        score:0,
+        userName:"",
+        openName:"",
+    };
+	let crtf;
 	/*******************************************************************************************************/
 	//																	My change
 	/*******************************************************************************************************/
+	
 	const startContainer = document.createElement("div");
 	const waitContainer = document.createElement("div");
 	const app = document.getElementById('pingpong-game');
@@ -90,12 +105,20 @@ document.addEventListener("DOMContentLoaded", () =>  {
 	app.appendChild(startContainer);
 	app.appendChild(waitContainer);
 	app.append(game_over);
-	document.getElementById("startGame1").addEventListener("click", function() {
+	document.getElementById("startGame1").addEventListener("click", async function() {
 		wait_page();
 		if (gameType == 'remote')
-			fetchRoom();
-		else
-			createRoom();
+			{
+				await fetchUser();
+				wait_page();
+				await fetchRoom();
+
+			}
+		else{
+			await fetchUser();
+			wait_page();
+			await createRoom();
+		}
 	});
 
 	window.addEventListener("beforeunload", (event) => {
@@ -104,27 +127,112 @@ document.addEventListener("DOMContentLoaded", () =>  {
 			socket.send(JSON.stringify({ type: "close" }));
 		}
 	});
-	function createRoom() {
-		fetch('http://127.0.0.1:8002/api/prooms/', {
+
+	async function fetchUser(){
+		const res = await fetch('https://localhost/user/get_curr_user/', {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+		})
+		
+		if (!res.ok) {
+				throw new Error(`HTTP error! Status: ${response.status}`);
+		}
+		let data = await res.json();  
+		if (data.status === '400') {
+			console.log('User is not authenticated:', data.data);
+		} else {
+			matchdata.id = data.data.id;
+			matchdata.user = data.data.id;
+			matchdata.level = data.data.level;
+			matchdata.userName = data.data.username;
+			matchdata.score = data.data.score
+			matchdata.result = -1;
+			console.log("full name is ", data.data.score);
+			console.log("LEVEL is ", matchdata.level, " User is ", matchdata.user, matchdata.id)
+		}
+	}
+
+	function fetchcrtf(){
+		fetch('https://localhost/get_csrf_token/', {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+		})
+		.then(response => {
+			if (!response.ok) {
+				throw new Error(`HTTP error! Status: ${response.status}`);
+			}
+			return response.json();  
+		})
+		.then(data => {
+			if (data.status === '400') {
+				console.log('User is not authenticated:', data.data);
+			} else {
+				crtf = data.csrfToken;
+			}
+		})
+	}
+	function postMatch()
+	{
+		console.log("match result is ", matchdata.result);
+		if (matchdata.result == 0)
+			matchdata.x_result = "lose";
+		else
+			matchdata.x_result = "won";
+	
+		let postdata = 
+		{
+			id : matchdata.id,
+			user : matchdata.id,
+			opponent: matchdata.opponent,
+			result: matchdata.x_result,
+			level:  matchdata.level,
+			score: matchdata.score,
+			Type: "PONG"
+		}
+		if (postdata.level < 0)
+			postdata.level = 0;
+		if (postdata.score < 0)
+			postdata.score = 0;
+		console.log("crtf ", crtf);
+		console.log("postdata ",postdata);
+		fetch('https://localhost/user/store_match/', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				'X-CSRFToken': crtf
 			},
-			body: JSON.stringify({
-				"code": generateRoomCode(),
-				"type": gameType
-			})
+			body: JSON.stringify(postdata)
 		})
-	    .then(response => response.json())
-	    .then(data => {
-	        roomCode = data.code;
-	        console.log("Created new room with code: ", roomCode); 
-	        wait_page();
-	        connectWebSocket();
-	    })
-	    .catch(error => {
+	}
+	
+
+	async function createRoom() {
+		try
+		{
+			const res = await fetch('http://127.0.0.1:8002/api/prooms/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					"code": generateRoomCode(),
+					"type": gameType
+				})
+			})
+	    	let data = await res.json()
+	    	    roomCode = data.code;
+	    	    console.log("Created new room with code: ", roomCode); 
+	    	    wait_page();
+	    	    connectWebSocket();
+		}
+	    catch(error )
+		{
 	        console.error("Error creating room:", error);
-	    });
+	    }
 	}
 
 	function disconnect()
@@ -134,40 +242,30 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		}
 	}
 
-	function fetchRoom() {
-	    fetch('http://127.0.0.1:8002/api/prooms/')
-	    .then(response => {
-	        if (!response.ok) {
-	            console.log("No available rooms, creating a new room...");
-	            createRoom();
-	            room_is_created = true;
-	            console.log("room was created");
-	        }
-	        console.log("we are about to return ");
-	        return response.json();
-	    })
-	        .then(data => {
-	            if (data && !room_is_created) {
-	                const room = data;
-	                console.log("the room is ", room.code, " and num of player ", room.players);
-	                if (room.players < 2) {
-	                    console.log("********************************inside room num ", room.code, " and num of player ", room.players);
-	                    roomCode = room.code;  
-	                    console.log("Joining existing room with code: ", roomCode); 
-	                    wait_page();
-	                    connectWebSocket();
-	                    return ;
-	                }
-	                else {
-	                    console.log("Room is full, creating a new room...");
-	                    createRoom();  
-	                }
-	            }
-	        }) 
-	        .catch(error => {
-	            console.error("Error fetching rooms:", error);
-	        });
-	}
+async function fetchRoom() {
+    try {
+        const response = await fetch('http://127.0.0.1:8002/api/prooms/');
+        
+        if (!response.ok) {
+            console.log("No available rooms. Creating a new room...");
+            return await createRoom();
+        }
+        
+        const room = await response.json();
+        console.log("Fetched room:", room);
+
+        if (room.players < 3) {
+            console.log(`Joining room ${room.code} with ${room.players} players.`);
+            roomCode = room.code;
+            connectWebSocket();
+        } else {
+            console.log("Room is full, creating a new room...");
+            await createRoom();
+        }
+    } catch (error) {
+        console.error("Error fetching or creating room:", error);
+    }
+}
 
 	function connectWebSocket() {
 		socket = new WebSocket(`ws://127.0.0.1:8002/ws/playp/${roomCode}/`);
@@ -212,7 +310,24 @@ document.addEventListener("DOMContentLoaded", () =>  {
 				noMatch = true;
 				left_game(data.pad_num);
 			}
+			else if (data.event  == "USERS")
+			{
+				let message = data.message
+				if (matchdata.id == message.user1)
+				{
+					matchdata.opponent = message.user2;
+					matchdata.openName = message.userName2;
+				}
+				else
+				{
+					matchdata.opponent = message.user1;
+					matchdata.openName = message.userName1;
+	
+				}
+				console.log("Update Match ", matchdata.id, " ope ", matchdata.opponent);
+				console.log("message.userName", message)
 
+			}
 		};
 	}
 	
@@ -229,6 +344,15 @@ document.addEventListener("DOMContentLoaded", () =>  {
 	function start_game(){
 		console.log("start")
 		console.log("tourn mod");
+		wait_page();
+		fetchcrtf();
+        socket.send(JSON.stringify({
+            "type": "START",
+            "message": {
+                "id": matchdata.id,
+                "name": matchdata.userName
+            }
+        }));
         startContainer.classList.remove("active");
 		waitContainer.classList.remove("active");
 		main_counter.style.display = "block";
@@ -243,6 +367,11 @@ document.addEventListener("DOMContentLoaded", () =>  {
 			renderGame();
 			
 		}, 3500)
+		socket.send(JSON.stringify({
+            "type": "DUSER",
+            "message": ""
+        }));
+
 		gameStart = true;
 
 	}
@@ -364,6 +493,9 @@ document.addEventListener("DOMContentLoaded", () =>  {
 					document.getElementById("result1").innerHTML = "Red  Won";
 					game_over.style.backgroundColor =  "#ff0000";
 				}
+				matchdata.score += 30;
+				matchdata.result = 1;
+				matchdata.level += 1;
 			}
 			else
 			{
@@ -374,7 +506,11 @@ document.addEventListener("DOMContentLoaded", () =>  {
 					game_over.style.backgroundColor = "#0095DD";
 				else
 					game_over.style.backgroundColor =  "#ff0000";
+				matchdata.score -= 20;
+				matchdata.result = 0;
+				matchdata.level -= 1;
 			}
+			postMatch();
 			document.querySelector("#play-again").style.display = "block";
 		}
 		else 
@@ -661,6 +797,7 @@ document.addEventListener("DOMContentLoaded", () =>  {
 		final = [];
 		bracket = [];
 		pmatch = 0;
+		matchdata = [];
 		game_over.style.display = "none";
 		gameContainer.style.display = "none";
 		startContainer.classList.add("active");
