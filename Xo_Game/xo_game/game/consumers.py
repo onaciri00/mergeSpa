@@ -17,14 +17,13 @@ class TicTacToeConsumer(AsyncWebsocketConsumer):
                 'board': ['', '', '', '', '', '', '', '', ''],  
             }
         if self.room_group_name not in connected_players:
-            if self.room_group_name not in connected_players:
-              connected_players[self.room_group_name] = {
-                  "user1": None,
-                  "user2": None,
-                  "user1Name":None,
-                  "user2Name":None,
-                  "channels": []
-              }
+            connected_players[self.room_group_name] = {
+                "user1": None,
+                "user2": None,
+                "user1Name":None,
+                "user2Name":None,
+                "channels": []
+            }
             turn_tracker[self.room_group_name] = 'X'
         if len(connected_players[self.room_group_name]['channels']) >= 2:
             await self.close()
@@ -52,15 +51,13 @@ class TicTacToeConsumer(AsyncWebsocketConsumer):
                 {'type': 'send_message', 'message': 'Waiting for the second player...', 'event': 'wait'}
             )
     async def disconnect(self, close_code):
-        if self.room_group_name in connected_players:
-            if self.channel_name in connected_players[self.room_group_name]:
-                # connected_players[self.room_group_name].remove(self.channel_name)
-                player_left_index = connected_players[self.room_group_name].index(self.channel_name)
-                player_left = 'X' if player_left_index == 0 else 'O'  # Assuming the first player is 'X' and the second is 'O'
-            
-            # Remove the player from the connected players list
+        player_left_index = None
         if self.room_group_name in connected_players:
             if self.channel_name in connected_players[self.room_group_name]["channels"]:
+                # connected_players[self.room_group_name].remove(self.channel_name)
+                # player_left_index = connected_players[self.room_group_name]["channels"].index(self.channel_name)
+                player_left_index = connected_players[self.room_group_name]["channels"].index(self.channel_name)
+                player_left = 'X' if player_left_index == 0 else 'O'  # Assuming the first player is 'X' and the second is 'O'
                 connected_players[self.room_group_name]["channels"].remove(self.channel_name)
         if len(connected_players[self.room_group_name]["channels"]) == 1:
             await self.channel_layer.group_send(
@@ -72,9 +69,9 @@ class TicTacToeConsumer(AsyncWebsocketConsumer):
                 }
             )
             await self.close()
-        if len(connected_players[self.room_group_name]) == 0:
+        if len(connected_players[self.room_group_name]["channels"]) == 0:
             await self.delete_room() 
-            del connected_players[self.room_group_name]["channels"]
+            del connected_players[self.room_group_name]
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
     async def delete_room(self):
         await sync_to_async(XRoom.objects.filter(code=self.room_code).delete)()
